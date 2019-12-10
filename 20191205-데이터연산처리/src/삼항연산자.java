@@ -10,6 +10,7 @@ import java.util.Scanner;
  *   
  *   
  *   좌석 => 1 2 3 4 5 => 1,2,4 좌석예매 불가능 / 3,5 좌석예매 가능
+ *   dfhdhddhdhdh
  */
 public class 삼항연산자 {
 
