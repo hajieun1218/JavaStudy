@@ -67,6 +67,7 @@ public class 반복문3 {
 		
 		// 승 무 패
 		System.out.println("사용자 전적 : " + win + "승 " + same + "무 " + lose + "패");
+		
 	}
 
 }
