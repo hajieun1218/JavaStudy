@@ -19,7 +19,6 @@ public class ¹è¿­8 {
 		int[] math = new int[3];
 		int[] total = new int[3];
 		char[] score = new char[3];
-		int[] lank = new int[3];
 		double[] avg = new double[3];
 		
 		for(int i=0; i<3; i++) {
