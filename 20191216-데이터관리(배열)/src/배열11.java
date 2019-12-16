@@ -1,9 +1,11 @@
+import java.util.Arrays;
+
 /*
  *   5개의 난수 발생 ==> 배열
  *   30 20 40 50 10
  *   ===============> 50 40 30 20 10
  *   
- *   <<선택정렬>>
+ *   <<선택정렬>> Select Sort
  */
 public class 배열11 {
 
@@ -12,6 +14,7 @@ public class 배열11 {
 
 		int[] num = new int[5];
 		
+		System.out.println("정렬 전 : ");
 		for(int i=0; i<5; i++) {
 			num[i] = (int)(Math.random()*100) + 1;
 			System.out.print(num[i] + " ");
@@ -28,6 +31,14 @@ public class 배열11 {
 		}
 		
 		System.out.println();
+		System.out.println("정렬 후 : ");
+		for(int i:num) {
+			System.out.print(i + " ");
+		}
+		
+		
+		System.out.println();
+		Arrays.sort(num);
 		for(int i:num) {
 			System.out.print(i + " ");
 		}
