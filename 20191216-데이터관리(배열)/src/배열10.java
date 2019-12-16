@@ -1,19 +1,14 @@
 // 다섯개 정수 => 점수의 등수를 옆에 출력
 
-import java.util.Scanner;
 public class 배열10 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		Scanner scan = new Scanner(System.in);
 		int[] num = new int[5];
 		int[] rank = new int[5];
 		
 		for(int i=0; i<5; i++) {
-//			System.out.print((i+1) + "번째 정수 입력 : ");
-//			num[i] = scan.nextInt();
-			
 			num[i] = (int)(Math.random()*100)+1;
 		}
 		
