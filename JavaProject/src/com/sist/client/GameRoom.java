@@ -3,101 +3,140 @@ package com.sist.client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
-public class GameRoom extends JPanel {
-	JPanel[] pans = new JPanel[6];
-	JTextField[] ids = new JTextField[6];
-	JTextArea ta = new JTextArea();
-	JTextField tf = new JTextField();
-	JButton b1, b2, b3, b4, b5;
-
-	public GameRoom() {
-		for (int i = 0; i < 6; i++) {
-			pans[i] = new JPanel();
-			pans[i].setBackground(Color.black);
-			ids[i] = new JTextField();
+import java.util.ArrayList;
+public class GameRoom extends JPanel implements ActionListener{
+	
+	
+   JPanel[] pans=new JPanel[6];
+   JTextField[] ids=new JTextField[6];
+   
+   //정답입력창
+   JTextField ans =new JTextField(15);
+   JTextArea ansTa = new JTextArea();
+   
+   // 채팅창
+   JTextArea ta=new JTextArea();
+   JTextField tf=new JTextField();
+   JButton b1,b2,b3,b4,b5;
+   
+   // 유저
+   int userKey = 4;
+   ArrayList<String> userList = new ArrayList<String>();
+   {
+	   for(int i =0; i<userKey;i++) {
+		   userList.add("user"+i);
+	   }
+   }
+   String[] userName = {"저팔계","거북도사","부르마","삼장법사","오공이"};
+   JLabel[] u = new JLabel[userList.size()];
+   // 유저 점수 출력
+   String[] s1 = new String[u.length];
+   int[] score = new int[u.length];
+   {
+		for(int i =0; i<u.length;i++){
+			score[i] =100;  // 여기에 점수 변수? 유저 점수가 들어올 자리
+			s1[i] = String.valueOf(score[i]);
 		}
-		setLayout(null);
-		pans[0].setBounds(10, 15, 150, 120);
-		pans[0].setLayout(new BorderLayout());
-		pans[0].add("Center", new JLabel(
-				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Icon0.png"), 150, 120))));
-		ids[0].setBounds(10, 140, 150, 30);
-		ids[0].setEditable(false);
-		ids[0].setText("심청이");
+	}	
 
-		pans[1].setBounds(10, 180, 150, 120);
-		pans[1].setLayout(new BorderLayout());
-		pans[1].add("Center", new JLabel(
-				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Icon1.png"), 150, 120))));
-		ids[1].setBounds(10, 305, 150, 30);
-		ids[1].setEditable(false);
-		ids[1].setText("이순신");
+   
+   // GameRoom()
+   public GameRoom()
+   {
+	   for(int i=0;i<6;i++)
+	   {
+		   pans[i]=new JPanel();
+		   pans[i].setBackground(Color.black);
+		   ids[i]=new JTextField();
+	   }
+	   
+	   int[] a = {15,180,340}; // x축 위치
+	   int[] e = {140,305,470};// y축 위치
+	   int j =0; // y축 위치잡는데 사용하는 변수
+	   setLayout(null);
+	  
+	   // 아바타 자리 잡기
+	   for(int i=0; i<u.length; i++) {
+		   if(i == 3) j=0;
+		   if(i<3) {
+			   pans[i].setBounds(10, a[j], 150,120 );
+			   pans[i].setLayout(new BorderLayout());
+			   pans[i].add("Center",new JLabel(new ImageIcon(getImageSizeChange(
+					   new ImageIcon("C:\\javaDev\\ProjectImage\\icon"+i+".png"), 150, 120))));
+			   ids[i].setBounds(10, e[j], 150, 30);
+			   ids[i].setEditable(false);
+			   ids[i].setText(userName[i]);
+			   
+		   }
+		 
+		   else if(i>=3){
+			   pans[i].setBounds(850, a[j],150,120 );
+			   pans[i].setLayout(new BorderLayout());
+			   pans[i].add("Center",new JLabel(new ImageIcon(getImageSizeChange
+				   (new ImageIcon("C:\\javaDev\\ProjectImage\\Icon"+i+".png"), 150, 120))));
+			   ids[i].setBounds(850, e[j], 150, 30);
+			   ids[i].setEditable(false);
+			   ids[i].setText(userName[i]);
+		   }
+		   j++;
+	   }
+	  
+	   // 패널과 아이콘을 배치
+	   for(int i=0;i<u.length;i++)
+	   {
+		   add(pans[i]);
+		   add(ids[i]);
+	   }
+	   
+	   // 채팅창
+	   JScrollPane js=new JScrollPane(ta);
+	   // 채팅창 입력되지 않게 고정
+	   ta.setEditable(false); 
+	   js.setBounds(10, 510, 600, 180);
+	   add(js);
+	   
+	   tf.setBounds(10, 695, 600, 30);
+	   add(tf);
+	   
+	   // 정답 입력창
+	   JScrollPane js1 = new JScrollPane(ansTa);
+	   ansTa.setEditable(false);
+	   js1.setBounds(620,570,200,120);
+	   ans.setBounds(620,695,200,30);
+	   add(ans);
+	   add(js1);
+	   
+	   // 버튼 입력
+	   b1=new JButton("초대하기");
+	   b2=new JButton("강퇴하기");
+	   b3=new JButton("게임준비");
+	   b4=new JButton("게임시작");
+	   b5=new JButton("나가기");
+	   
+	   
+	   // 패널과 버튼들
+	   JPanel p=new JPanel();
+	   p.setLayout(new GridLayout(5,1,5,5));
+	   p.add(b1);p.add(b2);p.add(b3);p.add(b4);p.add(b5);
+	   p.setBounds(850, 510, 150, 210);
+	   add(p);
+   }
+   
+   public Image getImageSizeChange(ImageIcon icon,int width,int height)
+   {
+   	Image img=icon.getImage();
+   	Image change=img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+   	return change;
+   }
 
-		pans[2].setBounds(10, 345, 150, 120);
-		pans[2].setLayout(new BorderLayout());
-		pans[2].add("Center", new JLabel(
-				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Icon2.png"), 150, 120))));
-		ids[2].setBounds(10, 470, 150, 30);
-		ids[2].setEditable(false);
-		ids[2].setText("박문수");
-
-		pans[3].setBounds(850, 15, 150, 120);
-		pans[3].setLayout(new BorderLayout());
-		pans[3].add("Center", new JLabel(
-				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Icon3.png"), 150, 120))));
-		ids[3].setBounds(850, 140, 150, 30);
-		ids[3].setEditable(false);
-		ids[3].setText("춘향이");
-
-		pans[4].setBounds(850, 180, 150, 120);
-		pans[4].setLayout(new BorderLayout());
-		pans[4].add("Center",
-				new JLabel(new ImageIcon(getImageSizeChange(new ImageIcon("c:\\image\\w3.png"), 150, 120))));
-		ids[4].setBounds(850, 305, 150, 30);
-		ids[4].setEditable(false);
-		ids[4].setText("홍길동");
-
-		pans[5].setBounds(850, 345, 150, 120);
-		pans[5].setLayout(new BorderLayout());
-		pans[5].add("Center",
-				new JLabel(new ImageIcon(getImageSizeChange(new ImageIcon("c:\\image\\w4.png"), 150, 120))));
-		ids[5].setBounds(850, 470, 150, 30);
-		ids[5].setEditable(false);
-		ids[5].setText("소서노");
-
-		for (int i = 0; i < 6; i++) {
-			add(pans[i]);
-			add(ids[i]);
-		}
-
-		JScrollPane js = new JScrollPane(ta);
-		js.setBounds(10, 510, 830, 180);
-		add(js);
-
-		tf.setBounds(10, 695, 830, 30);
-		add(tf);
-
-		b1 = new JButton("초대하기");
-		b2 = new JButton("강퇴하기");
-		b3 = new JButton("게임준비");
-		b4 = new JButton("게임시작");
-		b5 = new JButton("나가기");
-
-		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(5, 1, 5, 5));
-		p.add(b1);
-		p.add(b2);
-		p.add(b3);
-		p.add(b4);
-		p.add(b5);
-		p.setBounds(850, 510, 150, 210);
-		add(p);
-	}
-
-	public Image getImageSizeChange(ImageIcon icon, int width, int height) {
-		Image img = icon.getImage();
-		Image change = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		return change;
+   @Override
+	public void actionPerformed(ActionEvent e) {
+	   if(e.getSource() == b1) {
+		   // 게임 시작 Dialog창
+		   b1.setEnabled(false);
+	   }
+	
 	}
 }
+
+

@@ -18,7 +18,9 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 
 	public WaitRoom() {
 		f1 = new Font("궁서", Font.BOLD, 25);
-
+		setLayout(null);
+		
+		// 방 리스트
 		String[] col1 = { "방 번호", "방 이름", "상태" };
 		String[][] row1 = new String[0][3];
 		model1 = new DefaultTableModel(row1, col1) {
@@ -34,7 +36,10 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		table1.getTableHeader().setReorderingAllowed(false); // 테이블헤더 고정
 		table1.getTableHeader().setBackground(Color.pink);
 		js1.getViewport().setBackground(Color.white);
-
+		js1.setBounds(10, 15, 600, 400);
+		
+		
+		// 접속한 유저
 		String[] col2 = { "ID", "위치" };
 		String[][] row2 = new String[0][2];
 		model2 = new DefaultTableModel(row2, col2) {
@@ -50,13 +55,19 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		table2.getTableHeader().setReorderingAllowed(false); // 테이블헤더 고정
 		table2.getTableHeader().setBackground(Color.pink);
 		js2.getViewport().setBackground(Color.white);
-
-		setLayout(null);
-		js1.setBounds(10, 15, 600, 400);
 		js2.setBounds(615, 15, 385, 400);
-
+		
+		
+		// 채팅창
 		tp = new JTextArea();
 		tf = new JTextField();
+		tp.setEditable(false);
+		JScrollPane js3 = new JScrollPane(tp);
+		js3.setBounds(10, 420, 600, 260);
+		tf.setBounds(10, 690, 600, 30);
+		
+		
+		// 버튼
 		b1 = new JButton("방만들기");
 		b2 = new JButton("방들어가기");
 		b3 = new JButton("나가기");
@@ -66,18 +77,6 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		b2.setSize(50, 50);
 		b3.setFont(f1);
 		b3.setSize(50, 50);
-
-		tp.setEditable(false);
-		JScrollPane js3 = new JScrollPane(tp);
-		js3.setBounds(10, 420, 600, 260);
-		tf.setBounds(10, 690, 600, 30);
-		add(tf);
-		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(3, 2, 5, 5));
-//      JPanel p2 = new JPanel();
-		p.setOpaque(false);
-//      p2.setOpaque(false);
-
 		// 버튼 배경 지우기
 		b1.setContentAreaFilled(false);
 		b2.setContentAreaFilled(false);
@@ -85,16 +84,18 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		b1.setFocusPainted(false);
 		b2.setFocusPainted(false);
 		b3.setFocusPainted(false);
-
+		
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(3, 2, 5, 5));
+		p.setOpaque(false);
 		p.add(b1);
 		p.add(b2);
 		p.add(b3);
-//      p2.add(b2);
-//      p.setBounds(550, 680, 380, 250);
-//      p2.setBounds(700,680, 380, 250);
 		p.setBounds(615, 610, 380, 100);
+		
+		
+		add(tf);
 		add(p);
-//      add(p2);
 		add(js3);
 		add(js1);
 		add(js2);
@@ -110,16 +111,19 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		
+		// 채팅창 Enter
 		if (e.getSource() == tf) { // 엔터를 친 textfield가 뭐냐
 			tp.append(tf.getText() + "\n");
 			tf.setText("");
 			tf.requestFocus();
 		}
-		
+		// 방만들기 => 다이얼로그창
 		else if(e.getSource()==b1) {
 			md.setLocation(this.getWidth()/2-md.getWidth()/2, this.getHeight()/2-md.getHeight()/2);
 			md.setVisible(true);
 		}
+		// 다이얼로그창 => 방이름,인원 선택 후 방만들기 버튼
 		else if(e.getSource()==md.btnOK) {
 			String roomName=md.tf.getText();
 			String roomPeople = "";
@@ -134,7 +138,7 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 			md.tf.setText("");
 			md.radio[0].setSelected(true);
 			
-			setVisible(false);
+			md.setVisible(false);
 		}
 	}
 

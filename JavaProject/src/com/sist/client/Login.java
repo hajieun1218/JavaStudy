@@ -13,7 +13,7 @@ public class Login extends JPanel{
       
       
       setLayout(null);   //원하는 위치에 설정
-      back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\Projectimage\\login2.png");
+      back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\Projectimage\\login.png");
       
       tf=new JTextField();
       pf=new JPasswordField();

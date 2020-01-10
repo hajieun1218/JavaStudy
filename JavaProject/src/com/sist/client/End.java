@@ -10,20 +10,22 @@ import javax.swing.JTextField;
 
 public class End extends JPanel{
 	Image back;
-	JButton b1;
+	JButton b1,b2;
 	JPanel p;
 	
 	End(){
 		setLayout(null);
-		back = Toolkit.getDefaultToolkit().getImage("E:\\ProjectImage\\End.png");
+		back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\End.png");
 		p = new JPanel();
 		b1 = new JButton("종료");
 		b1.setFont(new Font("궁서",Font.BOLD,22));
-		
+		b2 = new JButton("재시작");
+		b2.setFont(new Font("궁서",Font.BOLD,22));
 		//배치
 		add(p);
-		p.setBounds(100,100,100,100);
+		p.setBounds(200,200,200,200);
 		p.add(b1);
+		p.add(b2);
 		p.setOpaque(false);
 		
 	}

@@ -20,8 +20,8 @@ public class MainForm extends JFrame implements ActionListener{
 	public MainForm() {
 		
 		setLayout(card);
-//		add("Start", st);
-//		add("Login", lo);
+		add("Start", st);
+		add("Login", lo);
 		add("Waiting",wr);
 		add("GameRoom",gr);
 		add("End",en);
@@ -40,6 +40,8 @@ public class MainForm extends JFrame implements ActionListener{
 		gr.b4.addActionListener(this);
 		gr.b5.addActionListener(this);
 		
+		// title 설정
+		setTitle("신서유기_퀴즈");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
