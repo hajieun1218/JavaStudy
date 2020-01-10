@@ -18,10 +18,11 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 
 	public WaitRoom() {
 		f1 = new Font("궁서", Font.BOLD, 25);
+		
 		setLayout(null);
 		
 		// 방 리스트
-		String[] col1 = { "방 번호", "방 이름", "상태" };
+		String[] col1 = { "방 번호", "방 이름", "인원" };
 		String[][] row1 = new String[0][3];
 		model1 = new DefaultTableModel(row1, col1) {
 			@Override
@@ -126,12 +127,16 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		// 다이얼로그창 => 방이름,인원 선택 후 방만들기 버튼
 		else if(e.getSource()==md.btnOK) {
 			String roomName=md.tf.getText();
+			if(roomName.length()<1) {
+				JOptionPane.showMessageDialog(this, "방 이름을 입력하세요!");
+				return;
+			}
 			String roomPeople = "";
 			for(int i=0;i<md.radio.length;i++) {
 				if(md.radio[i].isSelected())
-					roomPeople=md.radio[i].getText();
+					roomPeople=md.radio[i].getText().substring(0,1);
 			}
-			String[] data= {String.valueOf(roomNo),roomName,roomPeople};
+			String[] data= {String.valueOf(roomNo),roomName,"1/"+roomPeople};
 			roomNo++;
 			model1.addRow(data);
 			

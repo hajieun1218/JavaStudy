@@ -20,8 +20,8 @@ public class Login extends JPanel{
       b1=new JButton("LOGIN");
       b2=new JButton("MAIN");
       
-      tf.setBounds(50,300,280,30);
-      pf.setBounds(50,400,280,30);   
+      tf.setBounds(500,480,280,30);
+      pf.setBounds(500,550,280,30);   
       
 //      JPanel p=new JPanel();
 //      p.add(b1);
@@ -29,8 +29,8 @@ public class Login extends JPanel{
 //      p.setBounds(380,520,200,35);
 //      p.setOpaque(false);            //false==투명,true==불투명
       
-      b1.setBounds(70,450,100,30);
-      b2.setBounds(200,450,100,30);
+      b1.setBounds(525,620,100,30);
+      b2.setBounds(660,620,100,30);
       b1.setBackground(new Color(254,250,67));
       b2.setBackground(new Color(254,250,67));
       add(tf);
@@ -38,6 +38,12 @@ public class Login extends JPanel{
 //      add(p);
       add(b1);
       add(b2);
+      
+      
+      
+      
+      
+      
       
       
    }
