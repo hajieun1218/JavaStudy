@@ -17,7 +17,7 @@ public class GameRoom extends JPanel implements ActionListener{
    // 채팅창
    JTextArea ta=new JTextArea();
    JTextField tf=new JTextField();
-   JButton b1,b2,b3,b4,b5;
+   JButton b3,b4,b5;
    
    // 유저
    int userKey = 4;
@@ -107,8 +107,8 @@ public class GameRoom extends JPanel implements ActionListener{
 	   add(js1);
 	   
 	   // 버튼 입력
-	   b1=new JButton("초대하기");
-	   b2=new JButton("강퇴하기");
+//	   b1=new JButton("초대하기");
+//	   b2=new JButton("강퇴하기");
 	   b3=new JButton("게임준비");
 	   b4=new JButton("게임시작");
 	   b5=new JButton("나가기");
@@ -117,7 +117,8 @@ public class GameRoom extends JPanel implements ActionListener{
 	   // 패널과 버튼들
 	   JPanel p=new JPanel();
 	   p.setLayout(new GridLayout(5,1,5,5));
-	   p.add(b1);p.add(b2);p.add(b3);p.add(b4);p.add(b5);
+//	   p.add(b1);p.add(b2);
+	   p.add(b3);p.add(b4);p.add(b5);
 	   p.setBounds(850, 510, 150, 210);
 	   add(p);
    }
@@ -131,10 +132,10 @@ public class GameRoom extends JPanel implements ActionListener{
 
    @Override
 	public void actionPerformed(ActionEvent e) {
-	   if(e.getSource() == b1) {
-		   // 게임 시작 Dialog창
-		   b1.setEnabled(false);
-	   }
+//	   if(e.getSource() == b1) {
+//		   // 게임 시작 Dialog창
+//		   b1.setEnabled(false);
+//	   }
 	
 	}
 }
