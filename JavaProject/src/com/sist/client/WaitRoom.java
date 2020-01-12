@@ -7,6 +7,9 @@ import javax.swing.table.*;
 
 public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 
+	// 게임 배경 화면
+	Image back;
+	
 	JTable table1, table2;
 	DefaultTableModel model1, model2;
 	JTextArea tp;
@@ -17,7 +20,8 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 	int roomNo=1;
 
 	public WaitRoom() {
-		f1 = new Font("궁서", Font.BOLD, 25);
+		back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Game.png");
+		f1 = new Font("굴림", Font.BOLD, 25);
 		
 		setLayout(null);
 		
@@ -35,7 +39,8 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		table1.setRowHeight(38);
 		JScrollPane js1 = new JScrollPane(table1);
 		table1.getTableHeader().setReorderingAllowed(false); // 테이블헤더 고정
-		table1.getTableHeader().setBackground(Color.pink);
+		table1.getTableHeader().setBackground(new Color(254,250,67));
+		table1.getTableHeader().setFont(new Font("굴림",Font.BOLD, 17));
 		js1.getViewport().setBackground(Color.white);
 		js1.setBounds(10, 15, 600, 400);
 		
@@ -54,7 +59,8 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		table2.setRowHeight(38);
 		JScrollPane js2 = new JScrollPane(table2);
 		table2.getTableHeader().setReorderingAllowed(false); // 테이블헤더 고정
-		table2.getTableHeader().setBackground(Color.pink);
+		table2.getTableHeader().setBackground(new Color(254,250,67));
+		table2.getTableHeader().setFont(new Font("굴림",Font.BOLD, 17));
 		js2.getViewport().setBackground(Color.white);
 		js2.setBounds(615, 15, 385, 400);
 		
@@ -73,10 +79,13 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		b2 = new JButton("방들어가기");
 		b3 = new JButton("나가기");
 		b1.setFont(f1);
+		b1.setForeground(Color.white);
 		b1.setSize(50, 50);
 		b2.setFont(f1);
+		b2.setForeground(Color.white);
 		b2.setSize(50, 50);
 		b3.setFont(f1);
+		b3.setForeground(Color.white);
 		b3.setSize(50, 50);
 		// 버튼 배경 지우기
 		b1.setContentAreaFilled(false);
@@ -107,6 +116,7 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 		table2.addMouseListener(this);
 		b1.addActionListener(this);
 		md.btnOK.addActionListener(this);
+		md.btnCancel.addActionListener(this);
 	}
 
 	@Override
@@ -129,6 +139,7 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 			String roomName=md.tf.getText();
 			if(roomName.length()<1) {
 				JOptionPane.showMessageDialog(this, "방 이름을 입력하세요!");
+				md.tf.requestFocus();
 				return;
 			}
 			String roomPeople = "";
@@ -143,6 +154,11 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 			md.tf.setText("");
 			md.radio[0].setSelected(true);
 			
+			md.setVisible(false);
+		}
+		else if(e.getSource()==md.btnCancel) {
+			md.tf.setText("");
+			md.radio[0].setSelected(true);
 			md.setVisible(false);
 		}
 	}
@@ -160,7 +176,7 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 				
 				String data = "방번호 : " + no + "\n"
 						    + "방이름 : " + name + "\n"
-						    + "상태 : " + num;
+						    + "인원 : " + num;
 				
 				JOptionPane.showMessageDialog(this, data);
 			}
@@ -190,5 +206,10 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		g.drawImage(back, 0, 0, getWidth(), getHeight(), this);
 	}
 }
