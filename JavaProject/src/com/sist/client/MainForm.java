@@ -75,10 +75,29 @@ public class MainForm extends JFrame implements ActionListener{
       else if(e.getSource() == st.b3) {
           System.exit(0);
       }
+      
       // 로그인화면 (login -> 대기방)
-      else if(e.getSource() == lo.b1) {   
+      else if(e.getSource() == lo.b1) {
+         String name=lo.tf.getText();
+         char[] pass=lo.pf.getPassword();          
+          if(name.length()<1) {
+             JOptionPane.showMessageDialog(this, "아이디를 입력하세요");
+             lo.tf.requestFocus();
+             return;
+             }
+          else if(pass.length<1) {
+             
+             JOptionPane.showMessageDialog(this, "비밀번호를 입력하세요");
+              lo.pf.requestFocus();
+              return;
+          }
+               
+        
+          
          card.show(getContentPane(),"Waiting");
       }
+     
+
       // 로그인화면 (main -> 시작화면)
       else if(e.getSource() == lo.b2) {   
          card.show(getContentPane(),"Start");
@@ -86,14 +105,16 @@ public class MainForm extends JFrame implements ActionListener{
       // 대기방(방들어가기 -> 게임방)
       else if(e.getSource() == wr.b2) {
          card.show(getContentPane(),"GameRoom");
-         gr.ta.setText("~~님이 방에 입장하였습니다");
+         gr.ta.setText("~~님이 방에 입장하였습니다\n");
       }
       // 대기방(나가기 -> 시작화면)
       else if(e.getSource() == wr.b3) {
+        wr.tp.setText("");
          card.show(getContentPane(),"Start");
       }      
       // 게임방( 정상종료 -> end)
       else if(e.getSource()== gr.b5) {
+        gr.ta.setText("");
          card.show(getContentPane(), "Waiting");
       }
       else if(e.getSource() == gr.b4) {

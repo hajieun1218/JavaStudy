@@ -8,17 +8,23 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 public class GameRoom extends JPanel implements ActionListener{
+   
+   // quiz
+   Image quiz = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Quiz\\sports_kappa.png");
+   Image quizTitle = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\quizTitle.jpg");
+   
    // 액션 key
    int CheckAction =0;
     /*
-   게임 준비 -> 비활성화
-   게임 준비 2번 클릭 -> 활성화를 위해 사용
+         게임 준비 -> 비활성화
+         게임 준비 2번 클릭 -> 활성화를 위해 사용
      */   
    
    // 게임 배경 화면
    Image back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Game.png");
    Image icon = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Image0.png");
    Image icon1 = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Picture.png");
+   
    // 게임화면 창
    JPanel view = new JPanel();
    JLabel viewName = new JLabel("정답을 입력하세요"); 
@@ -44,7 +50,10 @@ public class GameRoom extends JPanel implements ActionListener{
    }
    String[] userName = {"저팔계","거북도사","부르마","삼장법사","오공이"};
    JLabel[] u = new JLabel[userList.size()];
+   
+   
    // 유저 점수 출력
+   JLabel[] scoreView = new JLabel[userList.size()];
    String[] s1 = new String[u.length];
    int[] score = new int[u.length];
    {
@@ -52,6 +61,11 @@ public class GameRoom extends JPanel implements ActionListener{
          score[i] =100;  // 여기에 점수 변수? 유저 점수가 들어올 자리
          s1[i] = String.valueOf(score[i]);
       } 
+      
+      for(int i =0; i<u.length; i++) {
+         scoreView[i] = new JLabel("점수:"+s1[i]);
+         scoreView[i].setForeground(Color.white);
+       }
    }   
 
    
@@ -88,7 +102,8 @@ public class GameRoom extends JPanel implements ActionListener{
             pans[i].setLayout(new BorderLayout());
             pans[i].add("Center",new JLabel(new ImageIcon(getImageSizeChange(
                   new ImageIcon("C:\\javaDev\\ProjectImage\\icon"+i+".png"), 150, 120))));
-            ids[i].setBounds(10, e[j], 150, 30);
+            ids[i].setBounds(10, e[j], 65, 30);
+            scoreView[i].setBounds(85,e[j],60,30);
             ids[i].setEditable(false);
             ids[i].setText(userName[i]);
             
@@ -99,7 +114,8 @@ public class GameRoom extends JPanel implements ActionListener{
             pans[i].setLayout(new BorderLayout());
             pans[i].add("Center",new JLabel(new ImageIcon(getImageSizeChange
                (new ImageIcon("C:\\javaDev\\ProjectImage\\Icon"+i+".png"), 150, 120))));
-            ids[i].setBounds(850, e[j], 150, 30);
+            ids[i].setBounds(850, e[j], 65, 30);
+            scoreView[i].setBounds(926,e[j],60,30);
             ids[i].setEditable(false);
             ids[i].setText(userName[i]);
          }
@@ -111,8 +127,13 @@ public class GameRoom extends JPanel implements ActionListener{
       {
          add(pans[i]);
          add(ids[i]);
+         add(scoreView[i]);
       }
       
+      
+      // 퀴즈 그림 출력
+      view.add("Center",new JLabel(new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Quiz\\sport_kappa.png"),300,300))));
+      view.add("North",new JLabel(new ImageIcon(getImageSizeChange(new ImageIcon("C:\\\\javaDev\\\\ProjectImage\\quizTitle2.png"),300,100))));
       // 채팅창
       JScrollPane js=new JScrollPane(ta);
       // 채팅창 입력되지 않게 고정
@@ -152,6 +173,7 @@ public class GameRoom extends JPanel implements ActionListener{
       p.setBounds(850, 518, 150, 210);
       p.setOpaque(false);
       add(p);
+      
       b4.addActionListener(this);
       b3.addActionListener(this);
       tf.addActionListener(this);
@@ -194,7 +216,8 @@ public class GameRoom extends JPanel implements ActionListener{
       g.drawImage(back, 0, 0, getWidth(),getHeight(),this);
       g.drawImage(icon1,620,500,150,170,this );
       g.drawImage(icon,718,500,130,170,this );
-   
+      
+     
    }
    
    
@@ -202,4 +225,3 @@ public class GameRoom extends JPanel implements ActionListener{
    
    
 }
-

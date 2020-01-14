@@ -156,6 +156,7 @@ public class WaitRoom extends JPanel implements ActionListener, MouseListener {
 			
 			md.setVisible(false);
 		}
+		// 다이얼로그창 => 취소버튼
 		else if(e.getSource()==md.btnCancel) {
 			md.tf.setText("");
 			md.radio[0].setSelected(true);
