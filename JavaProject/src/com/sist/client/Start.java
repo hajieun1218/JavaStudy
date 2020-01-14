@@ -21,7 +21,7 @@ public class Start extends JPanel{
 		f2 = new Font("Segoe Script", Font.BOLD, 25);
 
 		b1 = new JButton("Start");
-		b2 = new JButton("Help");
+		b2 = new JButton("Join");
 		b3 = new JButton("Exit");
 		b1.setFont(f1);
 		b2.setFont(f2);

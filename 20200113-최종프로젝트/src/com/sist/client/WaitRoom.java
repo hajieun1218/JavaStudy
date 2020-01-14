@@ -1,10 +1,5 @@
 package com.sist.client;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.*;
 
 import java.awt.*;
 import javax.swing.table.*;
@@ -13,7 +8,7 @@ public class WaitRoom extends JPanel{
 
 	JTable table1, table2;
 	DefaultTableModel model1, model2;
-	JTextPane tp;  // 여러줄 입력
+	JTextArea tp;  // 여러줄 입력
 	JTextField tf; // 한줄 입력
 	JButton b1, b2, b3, b4, b5, b6;
 	
@@ -35,7 +30,7 @@ public class WaitRoom extends JPanel{
 		js1.setBounds(10, 15, 600, 400);
 		js2.setBounds(10, 420, 600, 290);
 		
-		tp = new JTextPane();
+		tp = new JTextArea();
 		tf = new JTextField();
 		b1 = new JButton("방만들기");
 		b2 = new JButton("방들어가기");
