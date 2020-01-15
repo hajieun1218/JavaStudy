@@ -1,110 +1,230 @@
 package com.sist.server;
-import java.util.*;
+
 import java.io.*;
 import java.net.*;
-/*
-    클래스의 종류
-       = 일반 클래스
-       = 추상 클래스(인터페이스)
-          -> 하나의 클래스로 다른 클래스로 제어하기 위해서 사용
-       = 내부 클래스
-          
-          1) 클래스 끼리 데이터를 공유 => static => 멤버클래스 (Thread)
-          
-             classA{
-                
-                class B{
-                }
-             }
-             
-             Server가 가지고 있는 모든 변수를 공유
-          
-          2) 상속 없이 오버라이딩을 사용할 때 => 익명의 클래스
- */
+import java.util.*;
+import com.sist.common.*;
+import com.sist.server.Server.Client;
 
-public class Server implements Runnable{
-   /*
-       접속을 담당 : Server
-       
-    */
-   
-   private ServerSocket ss;
-   private final int PORT = 8888;
-   private Vector<Client> waitVc = new Vector<Client>();   //->Client의 모든 정보를 저장 (ip,id,port를 전부 사용하기 위해서) 
-   // 접속한 유저의 정보 // IP와  Port번호는 서버에 저장됨
-   // 통신만 작동하는 쓰레드를 따로 만들어야한다.
-   
-   // 하나의 서버에서는 하나의 쓰레드만 동작해야한다.
-   // 서버 가동 -> server = 메모리 할당을 한번만 사용
-   public Server() {
-      try {
-         ss = new ServerSocket(PORT);
-         // 기본 서버 = 50명 정보 임 -> 50명이 넘어가는 경우 종료됨
-         // 개통 => bind , 대기상태 => listen
-         System.out.println("server Start......");
-      }catch(Exception ex) {}
-   }
-   @Override
-   public void run() {
-         while(true) {
-         try {
-            
-            Socket s = ss.accept(); // Socket --> 클라이언트(유저) -> 유저의 접속정보를 서버에게 넘기면  넘겨받은 IP와 통신할 수 있도록 진행
-         // 접속시에 클라이언트의 정보를 받아서 저장하고 -> 스레드로 전송
-         // 접속시에 정보 ==> Socket(ip,port) => 접속을 하면 저장을 해야한다.
-            System.out.println("접속 완료 =:"+s.getInetAddress().getHostAddress());
-            Client client = new Client(s);
-            client.start();
-            waitVc.add(client);
-            // 정보를 저장
-            
-         }catch(Exception ex) {}
-         
-         
-         }
-   }
-   public static void main(String[] args) {
-   
-      Server server = new Server();
-      new Thread(server).start();
-      
-   }
-   /* 
-    
-    inner 클래스 => Thread, 윈도우, => 빅데이터 
-    Thread 다른 클래스의 내용을 공유하면서 진행해야함
-   
-   */
-   class Client extends Thread { 
-      // 멤버 클래스  -> 서버를 1개만 돌리기 위해서 사용 ? 왜 그런지는 모르겠음
-      // Server가 가지고 있는 모든 데이터를 사용 할 수 있다   
-      
-      // 통신을 하는 쓰레드 = Client
-      Socket s; // 클라이언트와 연결 전화기 (연결기계 => 소프트웨어로 제작)
-      // 소켓이 있으면 다른 쪽과 연결할 수 있다.
-      OutputStream out; // 클라이언트로 결과 값 전송
-      BufferedReader in; // 클라이언트로부터 요청 값을 받는다.
-      public Client(Socket s) { 
-         // 접속 할 때 마다 클라이언트가 생성 ex) 10 명이 접속하면 10개의 Client가 생성
-         
-         /*
-             서버 -> 클라이언트 정보
-             ㅡ클라이언트는 서버의 정보를 가지고 있다.
-             
-          */
-         try {
-            this.s = s;
-            out = s.getOutputStream();
-            in  = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                                             // 클라이언트가 저장된 부분부터 읽어 브리겠다.
-         }catch(Exception ex) {}
-      }   
-         // 통신 시작
-         public void run() {
-            while(true) {
-               
-            }
-            // 여기서 클라이언트와 서버의 소켓 교환이 이루어짐
-         }
-   }
+public class Server implements Runnable {
+	// 연결=>접속처리 => ServerSocket
+	// 각 클라이언트마다 통신담당 (Thread) => Socket <=> Socket
+	// 1. 서버 가동
+	private ServerSocket ss;
+	private final int PORT = 8888;
+	// 접속자 저장 공간
+	private Vector<Client> waitVc = new Vector<Client>();
+	private Vector<Room> roomVc = new Vector<Room>();
+
+	public Server() {
+		try {
+			ss = new ServerSocket(PORT);// bind,listen
+			System.out.println("Server Start...");
+		} catch (Exception ex) {
+		}
+	}
+
+	// 접속시 처리
+	public void run() {
+		try {
+			while (true) {
+				// 접속을 했다면 => 클라이언트의 정보수집 => IP,PORT(Socket)
+				Socket s = ss.accept();
+				// s(클라이언트의 정보 (ip,port) => Thread로 전송 (각자마다 통신을 할 수 있다)
+				Client client = new Client(s);
+				client.start();
+			}
+		} catch (Exception ex) {
+		}
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Server server = new Server();
+		new Thread(server).start();
+
+	}
+
+	// 통신을 담당하는 부분(각클라이언트마다 따로 작업을 한다)
+	class Client extends Thread {
+		String id, name, sex, pos;
+		int avata;
+		// pos=> 방위치
+		// 통신
+		Socket s;// 통신장비
+		// 보내기
+		OutputStream out;
+		// 받기
+		BufferedReader in;
+
+		public Client(Socket s) {
+			try {
+				this.s = s;
+				out = s.getOutputStream(); // 클라이언트의 저장위치 => 읽어갈 수 있게 만든다.
+				in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+				// InputStreamReader (필터스트림 => byte -< 2byte로 변환
+			} catch (Exception ex) {
+			}
+		}
+
+		// 클라이언트와 통신
+		public void run() {
+			// 100 |hong|홍길동|남자\n
+			try {
+				while (true) {
+					String msg = in.readLine();
+					System.out.println("Client=>" + msg);
+					StringTokenizer st = new StringTokenizer(msg, "|");
+					int protocol = Integer.parseInt(st.nextToken());
+					switch (protocol) {
+
+					case Function.LOGIN: {
+						id = st.nextToken();
+						name = st.nextToken();
+						sex = st.nextToken();
+						avata = Integer.parseInt(st.nextToken());
+						pos = "대기실";
+
+						// 지금값을 waitVc에 저장해라
+						messageAll(Function.LOGIN + "|" + id + "|" + name + "|" + sex + "|" + pos); // 서버와 다른 클라이언트들에게
+																									// 자신의 정보를 전달함
+						waitVc.add(this);
+						messageTo(Function.LOGIN_UPDATE + "|" + id); // 대기실로 창을 바꿈
+						// 클라이언트에서 id를 받아야하기 때문에 id를 붙여서 같이 보냄
+						for (Client user : waitVc) {
+							messageTo(
+									Function.LOGIN + "|" + user.id + "|" + user.name + "|" + user.sex + "|" + user.pos);
+							// 상대방의 정보를 읽어오겠다.
+							// Login은 대기방 테이블에 저장된 값을 출력
+						}
+
+						// 개설된 방 정보 전송
+						for (Room room : roomVc) {
+							messageTo(Function.WAIT_MAKEROOM + "|" + room.roomName + "|" + room.roomState + "|"
+									+ room.current + "/" + room.maxcount);
+						}
+						break;
+					}
+					/*
+					 * 로그인 -> 서버와 기존에 로그인되어 있는 사람에게 정보를 뿌리고 저장된 데이터를 내가 가져옴
+					 */
+					case Function.WAIT_CHAT: {
+						messageAll(Function.WAIT_CHAT + "|[" + name + "]" + st.nextToken());
+						break;
+					}
+
+					case Function.WAIT_EXIT_U: {
+						String mid = id;
+						for (int i = 0; i < waitVc.size(); i++) {
+							Client user = waitVc.get(i);
+							if (mid.equals(user.id)) {
+								// 윈도우 종료
+								messageTo(Function.WAIT_EXIT + "|");
+								// Vector에서 제거
+								waitVc.remove(i);
+								// 닫기 (통신종료)
+								in.close();
+								out.close();
+								break;
+							}
+						}
+						// 전체메세지 => 나가는 유저를 테이블에서 삭제
+						messageAll(Function.WAIT_EXIT_U + "|" + mid);
+						break;
+					}
+					case Function.WAIT_MAKEROOM: {
+						// Function.MAKEROOM+"|"+rn+"|"+rs+"|"+rp+"|"+inwon+"\n"
+						Room room = new Room(st.nextToken(), st.nextToken(), st.nextToken(),
+								Integer.parseInt(st.nextToken()));
+						room.userVc.add(this);
+						roomVc.add(room);
+						pos = room.roomName;
+
+						messageAll(Function.WAIT_MAKEROOM + "|" + room.roomName + "|" + room.roomState + "|"
+								+ room.current + "/" + room.maxcount);
+						
+						// 방에 들어가게 만든다
+						messageTo(Function.WAIT_INROOM+"|"+room.roomName+"|"
+								+id+"|"+sex+"|"+avata);
+						break;
+					}
+					case Function.WAIT_INROOM: {
+						// Function.ROOMIN+"|"+rn+"\n"
+						String rn = st.nextToken();
+						/*
+						 * 1. 방 이름을 받는다 2. 방을 찾는다(roomVc) 3. pos, current를 변경 ===================== = 이미
+						 * 방에 있는 사람 처리 => ROOMADD 1. 방에 입장하는 사람의 정보 전송(id,avata,...) 2. 입장 메세지 전송 = 방에
+						 * 들어가는 사람 처리 1. 방에 들어가라 => ROOMIN 2. 방에있는 사람들의 정보를 보내준다 = 대기실 변경 1. 인원수 변경 =>
+						 * 메세지 전송
+						 */
+						for (Room room : roomVc) {
+							if (rn.equals(room.roomName)) { // 방찾기
+								pos = room.roomName;
+								room.current++;
+
+								for (Client user : room.userVc) {
+									user.messageTo(Function.GAME_USERADD + "|" + id + "|" + sex + "|" + avata);
+									user.messageTo(Function.GAME_CHAT + "|[알림 ☞]" + id + "님이 입장하였습니다");
+								}
+
+								// 본인처리
+								room.userVc.add(this); // 서버에 저장
+								messageTo(Function.WAIT_INROOM + "|" + room.roomName + "|" + id + "|" + sex + "|" + avata);
+								// 상대방 출력
+								for (Client user : room.userVc) {
+									if (!id.equals(user.id)) { // 본인 빼고
+										messageTo(Function.GAME_USERADD + "|" + user.id + "|" + user.sex + "|" + user.avata);
+									}
+								}
+
+							}
+						}
+						break;
+					}
+					case Function.GAME_CHAT: {
+						messageAll(Function.GAME_CHAT + "|[" + name + "]" + st.nextToken());
+						break;
+					}
+					}
+				}
+
+			} catch (Exception ex) {
+			}
+		}
+
+		/*
+		 * 
+		 * 반복을 제거 => 메서드 서버에서 전송 1. 개인적으로 전송 2. 접속자 전체적으로 전송
+		 * 
+		 */
+		public synchronized void messageTo(String msg) {
+			// synchronized : 동기화 프로그램
+			// 데이터량이 많으면 동기화를 해주는 것이 좋음
+			/*
+			 * UDP : 통신속도 높음 , 신뢰성 낮음 TCP : 통신속도 낮음, 신뢰성이 높음
+			 * 
+			 * 패킷을 못 받았을 때 처리해주는 내용
+			 */
+			try {
+				out.write((msg + "\n").getBytes());
+				// readLine() => 끝나는 시점 =(\n) -> \n으로 끝나는 단위 = packet
+			} catch (Exception ex) {
+			}
+
+		}
+
+		public synchronized void messageAll(String msg) {
+
+			try {
+
+				for (Client user : waitVc) {
+					user.messageTo(msg);
+				}
+
+			} catch (Exception ex) {
+			}
+		}
+
+	}
+
 }

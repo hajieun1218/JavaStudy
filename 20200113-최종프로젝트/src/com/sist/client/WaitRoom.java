@@ -15,7 +15,14 @@ public class WaitRoom extends JPanel{
 	WaitRoom() {
 		String[] col1 = {"방이름","공개/비공개","인원"};
 		String[][] row = new String[0][3];
-		model1 = new DefaultTableModel(row, col1);
+		model1 = new DefaultTableModel(row, col1) {
+			// 더블클릭 => 테이블 편집 불가
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
 		table1 = new JTable(model1);
 		JScrollPane js1 = new JScrollPane(table1);
 		
@@ -60,5 +67,8 @@ public class WaitRoom extends JPanel{
 		add(js3);
 		add(js1);
 		add(js2);
+		
+//		String[] data={"빨리와","공개","1/6"};
+//		model1.addRow(data);
 	}
 }

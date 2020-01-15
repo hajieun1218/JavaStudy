@@ -1,24 +1,36 @@
 package com.sist.client;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionListener;
+import java.net.*;
+import java.util.*;
 
-public class MainForm extends JFrame implements ActionListener {
+import com.sist.dao.*;
+import com.sist.client.*;
+import com.sist.common.Function;
+
+import java.io.*;
+
+public class MainForm extends JFrame implements ActionListener, Runnable, MouseListener {
 
 	Start st = new Start();
 	Login lo = new Login();
 	WaitRoom wr = new WaitRoom();
-	MyDialog md = new MyDialog();
+	MakeRoom mr = new MakeRoom();
+//	MyDialog md = new MyDialog();
 	GameRoom gr = new GameRoom();
 	End en = new End();
+	MemberDAO dao = new MemberDAO();
 	CardLayout card = new CardLayout();
+
+	// 서버 통신을 위한 변수
+	Socket s;
+	OutputStream out;
+	BufferedReader in;
+
+	String myRoom;
 
 	public MainForm() {
 
@@ -32,10 +44,13 @@ public class MainForm extends JFrame implements ActionListener {
 		setSize(1024, 768); // 윈도우 크기
 		setVisible(true);
 
-		// X-> 종료
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//      // X-> 종료
+//      setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setResizable(false); // 크기조절 방지 => 화면 고정
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); // 엑스버튼으로 못나가게
+
 		// title 설정
-		setTitle("신서유기_퀴즈");
+//      setTitle("신서유기_퀴즈");
 		st.b1.addActionListener(this);
 		st.b3.addActionListener(this);
 		wr.b1.addActionListener(this);
@@ -46,6 +61,11 @@ public class MainForm extends JFrame implements ActionListener {
 		lo.b2.addActionListener(this);
 		gr.b4.addActionListener(this);
 		gr.b5.addActionListener(this);
+		wr.tf.addActionListener(this);
+		mr.b1.addActionListener(this); // 실제 방만들기
+		mr.b2.addActionListener(this); 
+		wr.table1.addMouseListener(this);
+		
 	}
 
 	public static void main(String[] args) {
@@ -69,6 +89,8 @@ public class MainForm extends JFrame implements ActionListener {
 		// 시작화면 ( start -> 로그인 (아직 구현x)
 		if (e.getSource() == st.b1) {// 로그인 버튼을 눌렸다면
 			card.show(getContentPane(), "Login"); // 화면 변경 // 대기실 창으로 이동
+			lo.tf.setText("");
+			lo.pf.setText("");
 		}
 		// 시작화면 (나가기 -> 종료)
 		else if (e.getSource() == st.b3) {
@@ -77,29 +99,55 @@ public class MainForm extends JFrame implements ActionListener {
 
 		// 로그인화면 (login -> 대기방)
 		else if (e.getSource() == lo.b1) {
+			String id = lo.tf.getText();
+			String pwd = String.valueOf(lo.pf.getPassword());
+			if (id.length() < 1) {
+				JOptionPane.showMessageDialog(this, "아이디를 입력하세요");
+				lo.tf.requestFocus();
+				return;
+			} else if (pwd.length() < 1) {
 
-         String name=lo.tf.getText();
-         char[] pass=lo.pf.getPassword();          
-          if(name.length()<1) {
-             JOptionPane.showMessageDialog(this, "아이디를 입력하세요");
-             lo.tf.requestFocus();
-             return;
-             }
-          else if(pass.length<1) {
-             
-             JOptionPane.showMessageDialog(this, "비밀번호를 입력하세요");
-              lo.pf.requestFocus();
-              return;
-          }
-          
-         card.show(getContentPane(),"Waiting");
-			
+				JOptionPane.showMessageDialog(this, "비밀번호를 입력하세요");
+				lo.pf.requestFocus();
+				return;
+			}
+
+			// 처리
+			dao = new MemberDAO();
+			String result = dao.isLogin(id, pwd);
+			if (result.equals("NOID")) {
+				JOptionPane.showMessageDialog(this, "ID가 존재하지 않습니다.");
+				lo.tf.setText("");
+				lo.tf.setText("");
+				lo.tf.requestFocus();
+			} else if (result.equals("NOPWD")) {
+				JOptionPane.showMessageDialog(this, "pwd가 틀립니다.");
+				lo.pf.setText("");
+				lo.pf.requestFocus();
+			} else {
+				connection(result);
+			}
 		}
 
 		// 로그인화면 (main -> 시작화면)
 		else if (e.getSource() == lo.b2) {
 			card.show(getContentPane(), "Start");
 		}
+
+		// 대기실 채팅
+		else if (e.getSource() == wr.tf) {
+			String msg = wr.tf.getText();
+			if (msg.length() < 1) {
+				wr.tf.requestFocus();
+				return;
+			}
+			try {
+				out.write((Function.WAIT_CHAT + "|" + msg + "\n").getBytes());
+			} catch (Exception ex) {
+			}
+			wr.tf.setText("");
+		}
+
 		// 대기방(방들어가기 -> 게임방)
 		else if (e.getSource() == wr.b2) {
 			card.show(getContentPane(), "GameRoom");
@@ -107,8 +155,69 @@ public class MainForm extends JFrame implements ActionListener {
 		}
 		// 대기방(나가기 -> 시작화면)
 		else if (e.getSource() == wr.b3) {
-			wr.tp.setText("");
-			card.show(getContentPane(), "Start");
+			try {
+				out.write((Function.WAIT_EXIT_U + "|\n").getBytes());
+				/*
+				 * 나가기 => 요청 === 처리 ==> 서버 결과출력 => 클라이언트
+				 */
+			} catch (Exception ex) {
+			}
+//			wr.tp.setText("");
+//			card.show(getContentPane(), "Start");
+		}
+		// 방만들기버튼 클릭(대기실)
+		else if (e.getSource() == wr.b1) {
+			// 초기화
+			mr.tf.setText("");
+			mr.rb1.setSelected(true);
+			mr.box.setSelectedIndex(0);
+			mr.la4.setVisible(false);
+			mr.pf.setVisible(false);
+			mr.pf.setText("");
+			mr.tf.requestFocus();
+
+			mr.setVisible(true);
+		} else if (e.getSource() == mr.b1) {
+			// 방이름
+			String rn = mr.tf.getText();
+			if (rn.length() < 1) {
+				JOptionPane.showMessageDialog(this, "방이름을 입력하세요");
+				mr.tf.requestFocus();
+				return;
+			}
+			for (int i = 0; i < wr.model1.getRowCount(); i++) {
+				String roomName = wr.model1.getValueAt(i, 0).toString();
+				if (rn.equals(roomName)) {
+					JOptionPane.showMessageDialog(this, "이미 존재하는 방입니다\n다시입력하세요");
+					mr.tf.setText("");
+					mr.tf.requestFocus();
+					return;
+				}
+			}
+
+			// 공개 비공개
+			String rs = ""; // 상태(공개/비공개)
+			String rp = ""; // 비밀번호
+			if (mr.rb1.isSelected()) {
+				rs = "공개";
+				rp = " "; // 반드시 공백 => StringTokenizer가 null이면 잘라내지 못함
+			} else {
+				rs = "비공개";
+				rp = String.valueOf(mr.pf.getPassword());
+			}
+
+			// 인원체크
+			int inwon = mr.box.getSelectedIndex() + 2;
+
+			// 서버로 전송
+			try {
+				out.write((Function.WAIT_MAKEROOM + "|" + rn + "|" + rs + "|" + rp + "|" + inwon + "\n").getBytes());
+			} catch (Exception ex) {
+			}
+			mr.setVisible(false);
+
+		} else if (e.getSource() == mr.b2) {
+			mr.setVisible(false);
 		}
 		// 게임방( 정상종료 -> end)
 		else if (e.getSource() == gr.b5) {
@@ -120,6 +229,187 @@ public class MainForm extends JFrame implements ActionListener {
 		} else if (e.getSource() == en.b1) {
 			card.show(getContentPane(), "GameRoom");
 		}
+	}
+
+	public void connection(String userData) {
+		try {
+			s = new Socket("localhost", 8888);
+			out = s.getOutputStream();
+			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			out.write((Function.LOGIN + "|" + userData + "\n").getBytes());
+
+		} catch (Exception ex) {
+		}
+		new Thread(this).start();
+
+	}
+
+	@Override
+	public void run() {
+
+		try {
+			while (true) {
+				String msg = in.readLine();
+				StringTokenizer st = new StringTokenizer(msg, "|");
+				int protocol = Integer.parseInt(st.nextToken());
+
+				switch (protocol) {
+
+				case Function.LOGIN: {
+					String[] data = { st.nextToken(), // id
+							st.nextToken(), // 이름
+							st.nextToken(), // 성별
+							st.nextToken(), // 위치
+					};
+					wr.model2.addRow(data);// 대기실에 저장된 값을 출력
+					break;
+				}
+				case Function.LOGIN_UPDATE: {
+					String id = st.nextToken();
+					setTitle(id);
+					card.show(getContentPane(), "Waiting");
+					break;
+				}
+				case Function.WAIT_CHAT: {
+					wr.tp.append(st.nextToken() + "\n");
+					break;
+				}
+				case Function.WAIT_EXIT_U: { // 남아있는사람
+					String id = st.nextToken();
+					for (int i = 0; i < wr.model2.getRowCount(); i++) { // 테이블에 저장된 개수만큼
+						String mid = wr.model2.getValueAt(i, 0).toString(); // i번째 id를 가져옴
+						if (mid.equals(id)) {
+							wr.model2.removeRow(i);
+							break;
+						}
+					}
+					break;
+				}
+				case Function.WAIT_EXIT: { // 실제 나가는 사람 처리
+					dispose(); // 메모리 회수
+					System.exit(0); // 프로그램 종료
+					break;
+				}
+				case Function.WAIT_MAKEROOM: {
+					String[] data = { st.nextToken(), // 방이름
+							st.nextToken(), // 상태(공개/비공개)
+							st.nextToken() // 1/6
+					};
+					wr.model1.addRow(data);
+					break;
+				}
+				case Function.WAIT_INROOM: {
+					// Function.ROOMIN+"|"+room.roomName+"|"+id+"|"+sex+"|"+avata
+					myRoom = st.nextToken();
+					String id = st.nextToken();
+					String sex = st.nextToken();
+					String avata = st.nextToken();
+
+					String temp = "";
+					temp = "Icon" + avata;
+
+					// 화면이동
+					card.show(getContentPane(), "GameRoom");
+
+					// 아바타
+					for (int i = 0; i < 6; i++) {
+						if (gr.sw[i] == false) { // 빈 공백이라면
+							gr.sw[i] = true;
+							gr.pans[i].removeAll(); // 검정색라벨 삭제
+							gr.pans[i].setLayout(new BorderLayout());
+							gr.pans[i].add("Center", new JLabel(new ImageIcon(
+									gr.getImageSizeChange(new ImageIcon("c:\\image\\" + temp + ".png"), 150, 120))));
+							gr.pans[i].validate(); // 재배치
+							gr.ids[i].setText(id);
+							break;
+						}
+					}
+					break;
+				}
+				case Function.GAME_USERADD: {
+					String id = st.nextToken();
+					String sex = st.nextToken();
+					String avata = st.nextToken();
+
+					String temp = "";
+					temp = "Icon" + avata;
+
+					// 아바타
+					for (int i = 0; i < 6; i++) {
+						if (gr.sw[i] == false) { // 빈 공백이라면
+							gr.sw[i] = true;
+							gr.pans[i].removeAll(); // 검정색라벨 삭제
+							gr.pans[i].setLayout(new BorderLayout());
+							gr.pans[i].add("Center", new JLabel(new ImageIcon(
+									gr.getImageSizeChange(new ImageIcon("c:\\image\\" + temp + ".png"), 150, 120))));
+							gr.pans[i].validate(); // 재배치
+							gr.ids[i].setText(id);
+							break;
+						}
+					}
+					break;
+				}
+				case Function.GAME_CHAT: {
+					gr.ta.append(st.nextToken() + "\n");
+					break;
+				}
+				}
+			}
+		} catch (Exception ex) {
+		}
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource()==wr.table1) {
+			if(e.getClickCount()==2) { // 더블클릭
+				// 방이름
+				int row=wr.table1.getSelectedRow();
+				String rn=wr.model1.getValueAt(row, 0).toString();
+				String inwon=wr.model1.getValueAt(row, 2).toString();
+//				String state=wr.model1.getValueAt(row, 1).toString();
+				
+				StringTokenizer st=new StringTokenizer(inwon,"/");
+				int no1=Integer.parseInt(st.nextToken());
+				int no2=Integer.parseInt(st.nextToken());
+				if(no1==no2) {
+					// 방에 들어갈 수 없다
+					JOptionPane.showMessageDialog(this,"이미 방인원이 찼습니다\n다른  방을 선택하세요");
+				}
+				else {
+					// 방에 들어갈 수 있다
+					try {
+						out.write((Function.WAIT_INROOM+"|"+rn+"\n").getBytes());
+					} catch(Exception ex) {}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

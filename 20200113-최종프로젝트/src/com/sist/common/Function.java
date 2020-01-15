@@ -24,6 +24,7 @@ public class Function {
 	public static final int WAITUPDATE=250;  // 방안에 인원 실시간 업데이트
 	public static final int POSCHANGE=260; // 방에 들어간사람 위치 변경
 	public static final int WAITCHAT=270;
+	public static final int ROOMCHAT=280;
 	public static final int EXIT=900;  // 남아있는사람
 	public static final int MYEXIT=910; // 나가는사람
  	
