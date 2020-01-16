@@ -52,12 +52,12 @@ public class WaitRoom extends JPanel{
 		tf.setBounds(615, 420, 380, 30);
 		
 		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(3,2,5,5));   //2개씩 3줄 간격5
+		p.setLayout(new GridLayout(2,1,5,5));   //2개씩 3줄 간격5
 		p.add(b1);
-		p.add(b2);
-		p.add(b3);
-		p.add(b4);
-		p.add(b5);
+//		p.add(b2);
+//		p.add(b3);
+//		p.add(b4);
+//		p.add(b5);
 		p.add(b6);
 		
 		p.setBounds(615, 460, 380, 240);

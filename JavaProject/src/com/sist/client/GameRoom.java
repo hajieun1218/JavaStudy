@@ -11,24 +11,21 @@ import java.util.ArrayList;
 public class GameRoom extends JPanel implements ActionListener {
 
 	boolean[] sw = new boolean[6]; // 들어가면 true, 빈 공백 false
-	
+	// 액션 key
+	int CheckAction = 0;
 	// quiz
 	Image quiz = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Quiz\\sports_kappa.png");
 	Image quizTitle = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\quizTitle.jpg");
 
-	// 액션 key
-	int CheckAction = 0;
-	/*
-	 * 게임 준비 -> 비활성화 게임 준비 2번 클릭 -> 활성화를 위해 사용
-	 */
-
 	// 게임 배경 화면
+
 	Image back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Game.png");
 	Image icon = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Image0.png");
 	Image icon1 = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Picture.png");
 
 	// 게임화면 창
-	JPanel view = new JPanel();
+	// JPanel view = new JPanel();
+	GameVIew games = new GameVIew();
 	JLabel viewName = new JLabel("정답을 입력하세요");
 	// 유저
 	JPanel[] pans = new JPanel[6];
@@ -42,43 +39,18 @@ public class GameRoom extends JPanel implements ActionListener {
 	JTextField tf = new JTextField();
 	JButton b2, b3, b4, b5;
 
-	// 유저 ?? 유저가 1명씩 들어옴 -> 바꿔야함
-	int userKey = 4;
-	ArrayList<String> userList = new ArrayList<String>();
-	{
-		for (int i = 0; i < userKey; i++) {
-			userList.add("user" + i);
-		}
-	}
-	String[] userName = { "저팔계", "거북도사", "부르마", "삼장법사", "오공이" };
-	JLabel[] u = new JLabel[userList.size()];
-
 	// 유저 점수 출력
-	JLabel[] scoreView = new JLabel[userList.size()];
-	String[] s1 = new String[u.length];
-	int[] score = new int[u.length];
-	{
-		for (int i = 0; i < u.length; i++) {
-			score[i] = 100; // 여기에 점수 변수? 유저 점수가 들어올 자리
-			s1[i] = String.valueOf(score[i]);
-		}
-
-		for (int i = 0; i < u.length; i++) {
-			scoreView[i] = new JLabel("점수:" + s1[i]);
-			scoreView[i].setForeground(Color.white);
-		}
-	}
 
 	// GameRoom()
 	public GameRoom() {
 		TitledBorder Tb = new TitledBorder(new LineBorder(Color.BLACK));
 
 		// 게임화면
-		view.setBackground(Color.white);
-		view.setBorder(Tb);
-		view.setLayout(new BorderLayout());
-		view.setBounds(170, 15, 665, 480);
-		add(view);
+//      view.setBackground(Color.white);
+//      view.setBorder(Tb);
+//      view.setLayout(new BorderLayout());
+//      view.setBounds(170,15, 665, 480);
+//      add(view);
 
 		for (int i = 0; i < 6; i++) {
 			pans[i] = new JPanel();
@@ -86,52 +58,65 @@ public class GameRoom extends JPanel implements ActionListener {
 			ids[i] = new JTextField();
 		}
 
-		int[] a = { 15, 180, 340 }; // x축 위치
-		int[] e = { 140, 305, 470 };// y축 위치
-		int j = 0; // y축 위치잡는데 사용하는 변수
 		setLayout(null);
-
-		// 아바타 자리 잡기
-		for (int i = 0; i < u.length; i++) {
-			if (i == 3)
-				j = 0;
-			if (i < 3) {
-				pans[i].setBounds(10, a[j], 150, 120);
-				pans[i].setLayout(new BorderLayout());
-				pans[i].add("Center", new JLabel(new ImageIcon(
-						getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\icon" + i + ".png"), 150, 120))));
-				ids[i].setBounds(10, e[j], 65, 30);
-				scoreView[i].setBounds(85, e[j], 60, 30);
-				ids[i].setEditable(false);
-				ids[i].setText(userName[i]);
-
-			}
-
-			else if (i >= 3) {
-				pans[i].setBounds(850, a[j], 150, 120);
-				pans[i].setLayout(new BorderLayout());
-				pans[i].add("Center", new JLabel(new ImageIcon(
-						getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Icon" + i + ".png"), 150, 120))));
-				ids[i].setBounds(850, e[j], 65, 30);
-				scoreView[i].setBounds(926, e[j], 60, 30);
-				ids[i].setEditable(false);
-				ids[i].setText(userName[i]);
-			}
-			j++;
-		}
-
 		// 패널과 아이콘을 배치
-		for (int i = 0; i < u.length; i++) {
+		for (int i = 0; i < 6; i++) {
 			add(pans[i]);
 			add(ids[i]);
-			add(scoreView[i]);
+		}
+		pans[0].setBounds(10, 15, 150, 120);
+		pans[0].setLayout(new BorderLayout());
+		pans[0].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[0].setBounds(10, 140, 150, 30);
+
+		pans[1].setBounds(850, 15, 150, 120);
+		pans[1].setLayout(new BorderLayout());
+		pans[1].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[1].setBounds(850, 140, 150, 30);
+
+		pans[2].setBounds(10, 180, 150, 120);
+		pans[2].setLayout(new BorderLayout());
+		pans[2].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[2].setBounds(10, 305, 150, 30);
+
+		pans[3].setBounds(850, 180, 150, 120);
+		pans[3].setLayout(new BorderLayout());
+		pans[3].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[3].setBounds(850, 305, 150, 30);
+
+		pans[4].setBounds(10, 345, 150, 120);
+		pans[4].setLayout(new BorderLayout());
+		pans[4].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[4].setBounds(10, 470, 150, 30);
+
+		pans[5].setBounds(850, 345, 150, 120);
+		pans[5].setLayout(new BorderLayout());
+		pans[5].add("Center", new JLabel(
+				new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+		ids[5].setBounds(850, 470, 150, 30);
+
+		for (int i = 0; i < 6; i++) {
+			add(pans[i]);
+			add(ids[i]);
+
 		}
 
-		// 퀴즈 그림 출력
-		view.add("Center", new JLabel(new ImageIcon(
+		// 게임 화면
+		games.setBackground(Color.white);
+		games.setBounds(170, 15, 670, 485);
+		add(games);
+
+		// 게임화면에 퀴즈 띄우기
+		games.setLayout(new BorderLayout());
+		games.add("Center", new JLabel(new ImageIcon(
 				getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Quiz\\sport_kappa.png"), 300, 300))));
-		view.add("North", new JLabel(new ImageIcon(
-				getImageSizeChange(new ImageIcon("C:\\\\javaDev\\\\ProjectImage\\quizTitle2.png"), 300, 100))));
+		games.add("North", new JLabel(new ImageIcon(
+				getImageSizeChange(new ImageIcon("C:\\\\javaDev\\\\ProjectImage\\quizTitle2.png"), 400, 100))));
 		// 채팅창
 		JScrollPane js = new JScrollPane(ta);
 		// 채팅창 입력되지 않게 고정
@@ -178,7 +163,7 @@ public class GameRoom extends JPanel implements ActionListener {
 		tf.addActionListener(this);
 	}
 
-	public Image getImageSizeChange(ImageIcon icon, int width, int height) {
+	public static Image getImageSizeChange(ImageIcon icon, int width, int height) {
 		Image img = icon.getImage();
 		Image change = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 		return change;
@@ -187,10 +172,10 @@ public class GameRoom extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String text = tf.getText();
-		if (e.getSource() == tf) {
-			ta.append(text + "\n");
-			tf.setText("");
-		}
+//		if (e.getSource() == tf) {
+//			ta.append(text + "\n");
+//			tf.setText("");
+//		}
 		// 게임준비
 		if ((CheckAction == 0) && (e.getSource() == b3)) {
 			tf.setEnabled(false);

@@ -85,6 +85,7 @@ public class MemberDAO {
 			
 		} catch(Exception ex) {
 			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		} finally {
 			// 연결해제
 			disConnection();

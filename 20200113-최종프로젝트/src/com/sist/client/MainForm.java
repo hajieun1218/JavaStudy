@@ -27,7 +27,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 	 *    2) 서버에서 들어오는 데이터 => Thread => 출력(Function)
 	 */
 	
-	String myRoom;
+	String myRoom,myId;
 	
 	MainForm() {
 		setLayout(card);
@@ -45,12 +45,15 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		
 		login.b1.addActionListener(this);
 		login.b2.addActionListener(this);
+		wr.table1.addMouseListener(this);
 		wr.tf.addActionListener(this);
 		wr.b6.addActionListener(this); // 나가기
 		wr.b1.addActionListener(this); // 방만들기 버튼(대기실)
 		mr.b1.addActionListener(this); // 실제 방만들기
 		mr.b2.addActionListener(this); 
-		wr.table1.addMouseListener(this);
+		gr.tf.addActionListener(this);// 방안에서 채팅 등록
+		gr.b5.addActionListener(this); // 방나가기
+		gr.b2.addActionListener(this); // 강퇴
 		
 //		setDefaultCloseOperation(EXIT_ON_CLOSE);
  	}
@@ -195,6 +198,31 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		else if(e.getSource()==mr.b2) {
 			mr.setVisible(false);
 		}
+		// 게임방 채팅
+		else if(e.getSource()==gr.tf ) {
+			String msg=gr.tf.getText();
+			if(msg.length()<1) {
+				return;
+			}
+			try {
+				out.write((Function.ROOMCHAT+"|"+myRoom+"|"+msg+"\n").getBytes());
+			} catch(Exception ex) {}
+			
+			gr.tf.setText("");
+		}
+		// 게임방 나가기
+		else if(e.getSource()==gr.b5) {
+			try {
+				out.write((Function.ROOMOUT+"|"+myRoom+"\n").getBytes());
+			} catch(Exception ex) {}
+		}
+		// 강퇴(게임방)
+		else if(e.getSource()==gr.b2) {
+			String youId=gr.box.getSelectedItem().toString();
+			try {
+				out.write((Function.KANG+"|"+myRoom+"|"+youId+"\n").getBytes());
+			} catch(Exception ex) {}
+		}
 	}
 
 	public void connection(String userData) {
@@ -281,6 +309,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					String id=st.nextToken();
 					String sex=st.nextToken();
 					String avata=st.nextToken();
+					myId=id;
 					
 					String temp="";
 					if(sex.equals("남자")) {
@@ -306,6 +335,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 							break;
 						}
 					}
+					
 					break;
 				}
 				case Function.ROOMADD: {
@@ -334,10 +364,101 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 							break;
 						}
 					}
+					gr.box.addItem(id);
 					break;
 				}
 				case Function.ROOMCHAT: {
 					gr.ta.append(st.nextToken()+"\n");
+					break;
+				}
+				case Function.WAITUPDATE: {
+					// Function.WAITUPDATE+"|"+room.roomName+"|"+room.current+"/"+room.maxcount+"|"+id+"|"+pos
+					String rn=st.nextToken();
+					String current=st.nextToken();
+					String maxcount=st.nextToken();
+					String id=st.nextToken();
+					String pos=st.nextToken();
+					
+					// 테이블에서 방 찾기
+					for(int i=0;i<wr.model1.getRowCount();i++) {
+						String roomName=wr.model1.getValueAt(i,0).toString();
+						if(rn.equals(roomName)) {
+							if(Integer.parseInt(current)==0) {
+								wr.model1.removeRow(i);
+							}
+							else {
+								wr.model1.setValueAt(current+"/"+maxcount,i,2);
+							}
+							break;
+						}
+					}
+					// 접속자 목록 변경
+					for(int i=0;i<wr.model2.getRowCount();i++) {
+						String mid=wr.model2.getValueAt(i,0).toString();
+						if(mid.equals(id)) {
+							wr.model2.setValueAt(pos,i,3);
+							break;
+						}
+					}
+					
+					break;
+				}
+				case Function.POSCHANGE: {
+					// Function.POSCHANGE+"|"+id+"|"+pos
+					String id=st.nextToken();
+					String pos=st.nextToken();
+					
+					for(int i=0;i<wr.model2.getRowCount();i++) {
+						String mid=wr.model2.getValueAt(i,0).toString();
+						if(mid.equals(id)) {
+							wr.model2.setValueAt(pos,i,3);
+							break;
+						}
+					}
+					break;
+				}
+				case Function.ROOMOUT: {
+					// 게임방에 남아있는 사람 => 아바타, 아이디 빼기
+					String id=st.nextToken();
+					for(int i=0;i<6;i++) {
+						String mid=gr.ids[i].getText();
+						if(id.equals(mid)) {
+							gr.sw[i]=false;
+							gr.pans[i].removeAll();
+							gr.pans[i].setLayout(new BorderLayout());
+							gr.pans[i].add("Center",
+									new JLabel(new ImageIcon(gr.getImageSizeChange(new ImageIcon("c:\\image\\def.png"), 150, 120))));
+							gr.pans[i].validate(); // 재배치
+							gr.ids[i].setText("");
+						}
+					}
+					gr.box.removeItem(id); // 강퇴목록에서 지우기
+					break;
+				}
+				case Function.MYROOMOUT: {
+					// 나가는 사람 => 창을 대기방으로 바꿈
+					
+					// 초기화 => 초기화 안하면 전에 들어갔던 방 아바타,id,채팅이 그대로 남아있음
+					for(int i=0;i<6;i++) {
+						gr.sw[i]=false;
+						gr.pans[i].removeAll();
+						gr.pans[i].setLayout(new BorderLayout());
+						gr.pans[i].add("Center",
+								new JLabel(new ImageIcon(gr.getImageSizeChange(new ImageIcon("c:\\image\\def.png"), 150, 120))));
+						gr.pans[i].validate(); // 재배치
+						gr.ids[i].setText("");
+					}
+					gr.ta.setText("");
+					gr.tf.setText("");
+					
+					// 초기화 후 대기실 이동
+					card.show(getContentPane(),"WR");
+					break;
+				}
+				case Function.KANG: {
+					String rn=st.nextToken();
+					JOptionPane.showMessageDialog(this, rn+"방에서 강퇴되었습니다");
+					out.write((Function.ROOMOUT+"|"+rn+"\n").getBytes());
 					break;
 				}
 					

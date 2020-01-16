@@ -77,6 +77,8 @@ public class Function {
    public static final int WAIT_EXIT_U = 331;
    // 대기방 업데이트
    
+   public static final int WAIT_POSCHANGE = 340;
+   
    
    
    

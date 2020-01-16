@@ -59,13 +59,14 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		en.b1.addActionListener(this);
 		lo.b1.addActionListener(this);
 		lo.b2.addActionListener(this);
-		gr.b4.addActionListener(this);
-		gr.b5.addActionListener(this);
+		gr.b4.addActionListener(this); // 게임시작
+		gr.b5.addActionListener(this); // 나가기
+		gr.tf.addActionListener(this); // 게임방채팅
 		wr.tf.addActionListener(this);
 		mr.b1.addActionListener(this); // 실제 방만들기
-		mr.b2.addActionListener(this); 
+		mr.b2.addActionListener(this);
 		wr.table1.addMouseListener(this);
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -96,7 +97,6 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		else if (e.getSource() == st.b3) {
 			System.exit(0);
 		}
-
 		// 로그인화면 (login -> 대기방)
 		else if (e.getSource() == lo.b1) {
 			String id = lo.tf.getText();
@@ -177,7 +177,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			mr.tf.requestFocus();
 
 			mr.setVisible(true);
-		} else if (e.getSource() == mr.b1) {
+		} 
+		else if (e.getSource() == mr.b1) {
 			// 방이름
 			String rn = mr.tf.getText();
 			if (rn.length() < 1) {
@@ -216,17 +217,35 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			}
 			mr.setVisible(false);
 
-		} else if (e.getSource() == mr.b2) {
+		} 
+		else if (e.getSource() == mr.b2) {
 			mr.setVisible(false);
+		}
+		// 게임방 채팅
+		else if (e.getSource() == gr.tf) {
+			String msg=gr.tf.getText();
+			if(msg.length()<1) {
+				return;
+			}
+			try {
+				out.write((Function.GAME_CHAT+"|"+myRoom+"|"+msg+"\n").getBytes());
+			} catch(Exception ex) {}
+			
+			gr.tf.setText("");
 		}
 		// 게임방( 정상종료 -> end)
 		else if (e.getSource() == gr.b5) {
-			gr.ta.setText("");
-			card.show(getContentPane(), "Waiting");
-		} else if (e.getSource() == gr.b4) {
+//			gr.ta.setText("");
+//			card.show(getContentPane(), "Waiting");
+			try {
+				out.write((Function.GAME_EXIT_U+"|"+myRoom+"\n").getBytes());
+			} catch(Exception ex) {}
+		} 
+		else if (e.getSource() == gr.b4) {
 			JOptionPane.showMessageDialog(this, "게임을 시작합니다");
 			card.show(getContentPane(), "End");
-		} else if (e.getSource() == en.b1) {
+		} 
+		else if (e.getSource() == en.b1) {
 			card.show(getContentPane(), "GameRoom");
 		}
 	}
@@ -317,8 +336,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 							gr.sw[i] = true;
 							gr.pans[i].removeAll(); // 검정색라벨 삭제
 							gr.pans[i].setLayout(new BorderLayout());
-							gr.pans[i].add("Center", new JLabel(new ImageIcon(
-									gr.getImageSizeChange(new ImageIcon("c:\\image\\" + temp + ".png"), 150, 120))));
+							gr.pans[i].add("Center",new JLabel(new ImageIcon(gr.getImageSizeChange(
+													new ImageIcon("c:\\javaDev\\ProjectImage\\" + temp + ".png"), 150, 120))));
 							gr.pans[i].validate(); // 재배치
 							gr.ids[i].setText(id);
 							break;
@@ -340,8 +359,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 							gr.sw[i] = true;
 							gr.pans[i].removeAll(); // 검정색라벨 삭제
 							gr.pans[i].setLayout(new BorderLayout());
-							gr.pans[i].add("Center", new JLabel(new ImageIcon(
-									gr.getImageSizeChange(new ImageIcon("c:\\image\\" + temp + ".png"), 150, 120))));
+							gr.pans[i].add("Center",new JLabel(new ImageIcon(gr.getImageSizeChange(
+													new ImageIcon("c:\\javaDev\\ProjectImage\\" + temp + ".png"), 150, 120))));
 							gr.pans[i].validate(); // 재배치
 							gr.ids[i].setText(id);
 							break;
@@ -353,6 +372,90 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					gr.ta.append(st.nextToken() + "\n");
 					break;
 				}
+				case Function.WAIT_UPDATE: {
+					// Function.WAITUPDATE+"|"+room.roomName+"|"+room.current+"/"+room.maxcount+"|"+id+"|"+pos
+					String rn=st.nextToken();
+					String current=st.nextToken();
+					String maxcount=st.nextToken();
+					String id=st.nextToken();
+					String pos=st.nextToken();
+					
+					// 테이블에서 방 찾기
+					for(int i=0;i<wr.model1.getRowCount();i++) {
+						String roomName=wr.model1.getValueAt(i,0).toString();
+						if(rn.equals(roomName)) {
+							if(Integer.parseInt(current)==0) {
+								wr.model1.removeRow(i);
+							}
+							else {
+								wr.model1.setValueAt(current+"/"+maxcount,i,2);
+							}
+							break;
+						}
+					}
+					// 접속자 목록 변경
+					for(int i=0;i<wr.model2.getRowCount();i++) {
+						String mid=wr.model2.getValueAt(i,0).toString();
+						if(mid.equals(id)) {
+							wr.model2.setValueAt(pos,i,3);
+							break;
+						}
+					}
+					
+					break;
+				}
+				case Function.WAIT_POSCHANGE: {
+					// Function.POSCHANGE+"|"+id+"|"+pos
+					String id=st.nextToken();
+					String pos=st.nextToken();
+					
+					for(int i=0;i<wr.model2.getRowCount();i++) {
+						String mid=wr.model2.getValueAt(i,0).toString();
+						if(mid.equals(id)) {
+							wr.model2.setValueAt(pos,i,3);
+							break;
+						}
+					}
+					break;
+				}
+				case Function.GAME_EXIT_U: {
+					// 게임방에 남아있는 사람 => 아바타, 아이디 빼기
+					String id=st.nextToken();
+					for(int i=0;i<6;i++) {
+						String mid=gr.ids[i].getText();
+						if(id.equals(mid)) {
+							gr.sw[i]=false;
+							gr.pans[i].removeAll();
+							gr.pans[i].setLayout(new BorderLayout());
+							gr.pans[i].add("Center",
+									new JLabel(new ImageIcon(gr.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+							gr.pans[i].validate(); // 재배치
+							gr.ids[i].setText("");
+						}
+					}
+					break;
+				}
+				case Function.GAME_EXIT: {
+					// 나가는 사람 => 창을 대기방으로 바꿈
+					
+					// 초기화 => 초기화 안하면 전에 들어갔던 방 아바타,id,채팅이 그대로 남아있음
+					for(int i=0;i<6;i++) {
+						gr.sw[i]=false;
+						gr.pans[i].removeAll();
+						gr.pans[i].setLayout(new BorderLayout());
+						gr.pans[i].add("Center",
+								new JLabel(new ImageIcon(gr.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+						gr.pans[i].validate(); // 재배치
+						gr.ids[i].setText("");
+					}
+					gr.ta.setText("");
+					gr.tf.setText("");
+					
+					// 초기화 후 대기실 이동
+					card.show(getContentPane(),"Waiting");
+					break;
+				}
+				
 				}
 			}
 		} catch (Exception ex) {
@@ -363,26 +466,26 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource()==wr.table1) {
-			if(e.getClickCount()==2) { // 더블클릭
+		if (e.getSource() == wr.table1) {
+			if (e.getClickCount() == 2) { // 더블클릭
 				// 방이름
-				int row=wr.table1.getSelectedRow();
-				String rn=wr.model1.getValueAt(row, 0).toString();
-				String inwon=wr.model1.getValueAt(row, 2).toString();
+				int row = wr.table1.getSelectedRow();
+				String rn = wr.model1.getValueAt(row, 0).toString();
+				String inwon = wr.model1.getValueAt(row, 2).toString();
 //				String state=wr.model1.getValueAt(row, 1).toString();
-				
-				StringTokenizer st=new StringTokenizer(inwon,"/");
-				int no1=Integer.parseInt(st.nextToken());
-				int no2=Integer.parseInt(st.nextToken());
-				if(no1==no2) {
+
+				StringTokenizer st = new StringTokenizer(inwon, "/");
+				int no1 = Integer.parseInt(st.nextToken());
+				int no2 = Integer.parseInt(st.nextToken());
+				if (no1 == no2) {
 					// 방에 들어갈 수 없다
-					JOptionPane.showMessageDialog(this,"이미 방인원이 찼습니다\n다른  방을 선택하세요");
-				}
-				else {
+					JOptionPane.showMessageDialog(this, "이미 방인원이 찼습니다\n다른  방을 선택하세요");
+				} else {
 					// 방에 들어갈 수 있다
 					try {
-						out.write((Function.WAIT_INROOM+"|"+rn+"\n").getBytes());
-					} catch(Exception ex) {}
+						out.write((Function.WAIT_INROOM + "|" + rn + "\n").getBytes());
+					} catch (Exception ex) {
+					}
 				}
 			}
 		}
@@ -391,25 +494,25 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -146,6 +146,9 @@ public class Server implements Runnable {
 						// 방에 들어가게 만든다
 						messageTo(Function.WAIT_INROOM+"|"+room.roomName+"|"
 								+id+"|"+sex+"|"+avata);
+						
+						// 대기실 갱신
+						messageAll(Function.WAIT_POSCHANGE+"|"+id+"|"+pos);
 						break;
 					}
 					case Function.WAIT_INROOM: {
@@ -176,13 +179,67 @@ public class Server implements Runnable {
 										messageTo(Function.GAME_USERADD + "|" + user.id + "|" + user.sex + "|" + user.avata);
 									}
 								}
+								// 대기실 변경
+								// 전체적으로 전송
+								messageAll(Function.WAIT_UPDATE+"|"+room.roomName+"|"
+										+room.current+"|"+room.maxcount+"|"+id+"|"+pos);
 
 							}
 						}
 						break;
 					}
 					case Function.GAME_CHAT: {
-						messageAll(Function.GAME_CHAT + "|[" + name + "]" + st.nextToken());
+						// Function.ROOMCHAT+"|"+myRoom+"|"+msg+"\n"
+						String rn=st.nextToken();
+						String strMsg=st.nextToken();
+						
+						// 방 찾기
+						for(Room room:roomVc) {
+							if(rn.equals(room.roomName)) {
+								for(Client user:room.userVc) {
+									user.messageTo(Function.GAME_CHAT+"|["+name+"] "+strMsg);
+								}
+							}
+						}
+						break;
+					}
+					case Function.GAME_EXIT_U: {
+						// 방 찾기
+						// Function.ROOMOUT+"|"+myRoom+"\n"
+						String rn=st.nextToken();
+						for(int i=0;i<roomVc.size();i++) {
+							Room room=roomVc.get(i);
+							if(rn.equals(room.roomName)) {
+								pos="대기실";
+								room.current--;
+								
+								// 방에 남아있는 사람
+								for(Client user:room.userVc) {
+									if(!user.id.equals(id)) {
+										user.messageTo(Function.GAME_EXIT_U+"|"+id);
+										user.messageTo(Function.GAME_CHAT+"|[알림 ☞] "+name+"님이 퇴장하였습니다");
+									}
+								}
+								// 실제 나가는 사람
+								for(int j=0;j<room.userVc.size();j++) {
+									Client user=room.userVc.get(j);
+									if(id.equals(user.id)) {
+										// userVc에서 제거
+										room.userVc.remove(j);
+										messageTo(Function.GAME_EXIT+"|");
+										break;
+									}
+								}
+								// 대기실
+								messageAll(Function.WAIT_UPDATE+"|"+room.roomName+"|"
+										+room.current+"|"+room.maxcount+"|"+id+"|"+pos);
+								if(room.current==0) {
+									roomVc.remove(i);
+									break;
+								}
+							}
+						}
+						
 						break;
 					}
 					}

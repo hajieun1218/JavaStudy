@@ -14,6 +14,9 @@ public class GameRoom extends JPanel {
 	
 	boolean[] sw=new boolean[6];  // 들어가면 true, 빈 공백 false
 
+	JComboBox box=new JComboBox();
+	
+	
 	public GameRoom() {
 		for (int i = 0; i < 6; i++) {
 			pans[i] = new JPanel();
@@ -80,6 +83,7 @@ public class GameRoom extends JPanel {
 		add(games);
 
 		JScrollPane js = new JScrollPane(ta);
+		ta.setEditable(false);
 		js.setBounds(10, 510, 830, 180);
 		add(js);
 
@@ -91,10 +95,12 @@ public class GameRoom extends JPanel {
 		b3 = new JButton("게임준비");
 		b4 = new JButton("게임시작");
 		b5 = new JButton("나가기");
+		
+		box.addItem("강퇴선택");
 
 		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(5, 1, 5, 5));
-		p.add(b1);
+		p.setLayout(new GridLayout(6, 1, 5, 5));
+		p.add(b1); p.add(box);
 		p.add(b2);
 		p.add(b3);
 		p.add(b4);

@@ -9,6 +9,7 @@ public class WaitRoom extends JPanel implements ActionListener{
 
    // 게임 배경 화면
    Image back;
+   JPanel myAvatar=new JPanel();
    
    JTable table1, table2;
    DefaultTableModel model1, model2;
@@ -24,6 +25,12 @@ public class WaitRoom extends JPanel implements ActionListener{
       f1 = new Font("굴림", Font.BOLD, 25);
       
       setLayout(null);
+      
+      // 아바타 이미지
+      myAvatar.setBounds(615,430,190,150);
+      myAvatar.add("Center", new JLabel(
+				new ImageIcon(GameRoom.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
+      
       
       // 방 리스트
       String[] col1 = { "방이름", "공개/비공개", "인원" };
@@ -96,12 +103,12 @@ public class WaitRoom extends JPanel implements ActionListener{
       b3.setFocusPainted(false);
       
       JPanel p = new JPanel();
-      p.setLayout(new GridLayout(3, 2, 5, 5));
+      p.setLayout(new GridLayout(3, 1, 5, 5));
       p.setOpaque(false);
       p.add(b1);
       p.add(b2);
       p.add(b3);
-      p.setBounds(615, 610, 380, 100);
+      p.setBounds(615, 620, 380, 100);
       
       
       add(tf);
