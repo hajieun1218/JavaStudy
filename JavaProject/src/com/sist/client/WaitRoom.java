@@ -33,7 +33,7 @@ public class WaitRoom extends JPanel implements ActionListener{
       
       
       // 방 리스트
-      String[] col1 = { "방이름", "공개/비공개", "인원" };
+      String[] col1 = { "방이름", "게임주제", "인원" };
       String[][] row1 = new String[0][3];
       model1 = new DefaultTableModel(row1, col1) {
          @Override

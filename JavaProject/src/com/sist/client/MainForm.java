@@ -171,9 +171,9 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			mr.tf.setText("");
 			mr.rb1.setSelected(true);
 			mr.box.setSelectedIndex(0);
-			mr.la4.setVisible(false);
-			mr.pf.setVisible(false);
-			mr.pf.setText("");
+//			mr.la4.setVisible(false);
+//			mr.pf.setVisible(false);
+//			mr.pf.setText("");
 			mr.tf.requestFocus();
 
 			mr.setVisible(true);
@@ -200,11 +200,17 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			String rs = ""; // 상태(공개/비공개)
 			String rp = ""; // 비밀번호
 			if (mr.rb1.isSelected()) {
-				rs = "공개";
+				rs = "애니메이션";
 				rp = " "; // 반드시 공백 => StringTokenizer가 null이면 잘라내지 못함
-			} else {
-				rs = "비공개";
-				rp = String.valueOf(mr.pf.getPassword());
+			} else if(mr.rb2.isSelected()){
+				rs = "의류브랜드";
+				rp = " ";
+			} else if(mr.rb3.isSelected()){
+				rs = "연예인";
+				rp = " ";
+			} else if(mr.rb4.isSelected()){
+				rs = "스포츠브랜드";
+				rp = " ";
 			}
 
 			// 인원체크
@@ -269,6 +275,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		try {
 			while (true) {
 				String msg = in.readLine();
+				System.out.println("Server=>" + msg);
 				StringTokenizer st = new StringTokenizer(msg, "|");
 				int protocol = Integer.parseInt(st.nextToken());
 

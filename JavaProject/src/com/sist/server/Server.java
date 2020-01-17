@@ -184,6 +184,14 @@ public class Server implements Runnable {
 								messageAll(Function.WAIT_UPDATE+"|"+room.roomName+"|"
 										+room.current+"|"+room.maxcount+"|"+id+"|"+pos);
 
+//								// 다 들어오면 게임 시작
+//								if(room.current==room.maxcount) {
+//									for(Client user:room.userVc) {
+////										user.messageTo(Function.GAME_START+"|[알림 ☞] 게임을 시작합니다");
+//										user.messageTo(Function.GAME_START+"|");
+//									}
+//								}
+								
 							}
 						}
 						break;

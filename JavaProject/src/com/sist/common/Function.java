@@ -91,6 +91,7 @@ public class Function {
     */
    
    public static final int GAME_USERADD = 420;
+   // 게임방에 들어오면 아바타,id추가
    
    public static final int GAME_ANSWER = 430;
    // 정답 입력
@@ -99,14 +100,23 @@ public class Function {
        서버 : 타이머 시간이 지난 후  DB의 정답과 비교 후
         맞으면   TRUE 틀리면 FALSE를 돌려줌 
     */
+   
    public static final int GAME_SCORE =431;
-   //  정답확인 겸 점수 CHECK 
+   //  정답확인 겸 점수 CHECK -> 점수를 클라이언트에 뿌려주는 것
 
    public static final int GAME_EXIT = 440;
 // 게임방 나가기
    public static final int GAME_EXIT_U = 441;
 // 게임방 나가기 업데이트
-
+   public static final int GAME_START = 450;
+   // 게임 시작
+   public static final int GAME_NEXT = 460;
+   // 다음 문제 진행
+   public static final int GAME_END = 470;
+   // 게임 종료 -> 시간 타이머 종료, 게임종료 Dialog창 
+   public static final int END = 480;
+   // 종료창으로 이동
+   
    
    /*   CLIENT : TRUE/ FALSE를 받아서 맞으면 SOCRE ++ 틀리면 X
            점수 저팔계|50|거북도사|100| ==> 서버로 전송
