@@ -41,20 +41,14 @@ public class GameRoom extends JPanel {
 	// 시간 프로그레스바
 	JProgressBar bar = new JProgressBar();
 
+	// 정답 O X
+	JLabel[] daps=new JLabel[20];
+	
 	// GameRoom()
 	public GameRoom() {
 
 		setLayout(null);
 		
-		TitledBorder Tb = new TitledBorder(new LineBorder(Color.BLACK));
-
-		// 게임화면
-//      view.setBackground(Color.white);
-//      view.setBorder(Tb);
-//      view.setLayout(new BorderLayout());
-//      view.setBounds(170,15, 665, 480);
-//      add(view);
-
 		for (int i = 0; i < 6; i++) {
 			pans[i] = new JPanel();
 			pans[i].setBackground(Color.black);
@@ -62,11 +56,6 @@ public class GameRoom extends JPanel {
 			ids[i].setEditable(false);
 		}
 
-//		// 패널과 아이콘을 배치
-//		for (int i = 0; i < 6; i++) {
-//			add(pans[i]);
-//			add(ids[i]);
-//		}
 		pans[0].setBounds(10, 15, 150, 120);
 		pans[0].setLayout(new BorderLayout());
 		pans[0].add("Center", new JLabel(
@@ -109,18 +98,33 @@ public class GameRoom extends JPanel {
 			add(ids[i]);
 
 		}
+		// 정답 라벨을 올릴 패널
+		JPanel ppp = new JPanel();
+		ppp.setLayout(new GridLayout(2,10,3,3));
+		for(int i =0; i<20;i++) {
+			daps[i] = new JLabel();
+			ppp.add(daps[i]);
+		}
+		// 정답 OX 라벨 배치
+		for(int i =0; i<10;i++) {
+			daps[i].setIcon(new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\n"+(i+1)+".png"),65,40)));
+		}
+		ppp.setBounds(170,370,670,100);
+		ppp.setBackground(Color.white);
+		add(ppp);
 
 		// 게임 화면
 		games.setBackground(Color.white);
-		games.setBounds(170, 15, 670, 485);
+//		games.setBounds(170, 15, 670, 485);
+		games.setBounds(170, 15, 670, 350);
 		add(games);
 
 		// 게임화면에 퀴즈 띄우기
-		games.setLayout(new BorderLayout());
-		games.add("Center", new JLabel(new ImageIcon(
-				getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Quiz\\3_3.png"), 300, 300))));
-		games.add("North", new JLabel(new ImageIcon(
-				getImageSizeChange(new ImageIcon("C:\\\\javaDev\\\\ProjectImage\\quizTitle2.png"), 400, 100))));
+//		games.setLayout(new BorderLayout());
+//		games.add("Center", new JLabel(new ImageIcon(
+//				getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\Quiz\\3_3.png"), 300, 300))));
+//		games.add("North", new JLabel(new ImageIcon(
+//				getImageSizeChange(new ImageIcon("C:\\\\javaDev\\\\ProjectImage\\quizTitle2.png"), 400, 100))));
 
 		// 채팅창
 		JScrollPane js = new JScrollPane(ta);
@@ -166,7 +170,11 @@ public class GameRoom extends JPanel {
 		bar.setForeground(Color.yellow);
 		bar.setBackground(Color.white);
 		bar.setStringPainted(true); // 몇퍼센트 표시
-		games.add("South",bar);
+		bar.setBounds(170,475,670,25);
+		add(bar);
+//		games.add("South",bar);
+		
+		
 	}
 
 	public static Image getImageSizeChange(ImageIcon icon, int width, int height) {

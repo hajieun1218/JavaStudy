@@ -3,6 +3,9 @@ package com.sist.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import javax.swing.JOptionPane;
+
 import com.sist.common.*;
 import com.sist.server.Server.Client;
 
@@ -144,7 +147,7 @@ public class Server implements Runnable {
 								+ room.current + "/" + room.maxcount);
 						
 						// 방에 들어가게 만든다
-						messageTo(Function.WAIT_INROOM+"|"+room.roomName+"|"
+						messageTo(Function.WAIT_INROOM+"|"+room.roomName+"|"+room.roomState+"|"
 								+id+"|"+sex+"|"+avata);
 						
 						// 대기실 갱신
@@ -172,7 +175,7 @@ public class Server implements Runnable {
 
 								// 본인처리
 								room.userVc.add(this); // 서버에 저장
-								messageTo(Function.WAIT_INROOM + "|" + room.roomName + "|" + id + "|" + sex + "|" + avata);
+								messageTo(Function.WAIT_INROOM + "|" + room.roomName + "|" + room.roomState + "|" + id + "|" + sex + "|" + avata);
 								// 상대방 출력
 								for (Client user : room.userVc) {
 									if (!id.equals(user.id)) { // 본인 빼고
@@ -191,6 +194,11 @@ public class Server implements Runnable {
 //										user.messageTo(Function.GAME_START+"|");
 //									}
 //								}
+								if(room.current == room.maxcount) {
+									for(Client user:room.userVc) {
+										user.messageTo(Function.START+"|[알림 ☞] 게임을 시작합니다");
+									}
+								}
 								
 							}
 						}
@@ -250,6 +258,39 @@ public class Server implements Runnable {
 						
 						break;
 					}
+					case Function.GAME_NEXT:{
+						String rn = st.nextToken();
+						String imageNO = st.nextToken();
+						for(Room room : roomVc) {
+							if(room.roomName.equals(rn)) {
+								for(Client user:room.userVc) {
+									if(Integer.parseInt(imageNO)>10) {
+										System.out.println("종료");
+									}
+									else {
+										user.messageTo(Function.GAME_NEXT+"|"+imageNO);
+									}
+								}
+							}
+						}
+						break;
+					}
+//					case Function.GAME_END: {
+//						// 게임종료
+//						// Function.GAME_END+"|"+myRoom+"|"+count+"\n"
+//						String rn=st.nextToken();
+//						String myScore=st.nextToken();
+//						
+//						for(Room room:roomVc) {
+//							if(rn.equals(room.roomName)) {
+//								for(Client user:room.userVc) {
+//									user.messageTo(Function.END+"|"+);
+//								}
+//							}
+//						}
+//						
+//						break;
+//					}
 					}
 				}
 
