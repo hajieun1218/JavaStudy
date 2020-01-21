@@ -59,6 +59,8 @@ public class Server implements Runnable {
 		OutputStream out;
 		// 받기
 		BufferedReader in;
+		boolean scoreCheck =false;
+		int memberCheck =0;
 
 		public Client(Socket s) {
 			try {
@@ -155,8 +157,9 @@ public class Server implements Runnable {
 						break;
 					}
 					case Function.WAIT_INROOM: {
-						// Function.ROOMIN+"|"+rn+"\n"
+						// Function.ROOMIN+"|"+rn +"\n"
 						String rn = st.nextToken();
+//						scoreCheck=Boolean.parseBoolean(st.nextToken());
 						/*
 						 * 1. 방 이름을 받는다 2. 방을 찾는다(roomVc) 3. pos, current를 변경 ===================== = 이미
 						 * 방에 있는 사람 처리 => ROOMADD 1. 방에 입장하는 사람의 정보 전송(id,avata,...) 2. 입장 메세지 전송 = 방에
@@ -263,12 +266,43 @@ public class Server implements Runnable {
 						String imageNO = st.nextToken();
 						for(Room room : roomVc) {
 							if(room.roomName.equals(rn)) {
-								for(Client user:room.userVc) {
-									if(Integer.parseInt(imageNO)>10) {
-										System.out.println("종료");
+								for(Client user:room.userVc) {	//현재 방에 있는 전부
+									if(user.id == id) {
+										if(Integer.parseInt(imageNO)>9) {	// 내가 넘어간 갯수가 10개 이상이라면
+											System.out.println("종료");
+												user.messageTo(Function.GAME_END+"|");										
+										}
 									}
 									else {
 										user.messageTo(Function.GAME_NEXT+"|"+imageNO);
+									}
+								}
+							}
+						}
+						break;
+					}
+					case Function.GAME_END:{
+						// 방 번호
+						int score = Integer.parseInt(st.nextToken());
+						String rn = st.nextToken();
+						
+						if(scoreCheck) {
+							memberCheck++;
+						}
+						System.out.println(memberCheck);
+					
+						if(!scoreCheck) {
+							for(Room room : roomVc) {
+								if(room.roomName.equals(rn)) {
+									for(Client user : room.userVc) {
+										if(user.id == id) {
+											messageTo(Function.END+"|");
+											messageTo(Function.END_U+"|"+score+"|"+id);
+										}
+										if(!(user.id == id)) {
+											user.messageTo(Function.END_U+"|"+score+"|"+id);
+										}
+										scoreCheck = true;
 									}
 								}
 							}

@@ -41,7 +41,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 	int count = 0;
 	// 퀴즈 주제 번호
 	int quizNo = 0;
-	
+	//
+//	boolean Check =true;
 	// 정답 
 	String[] dap=new String[10];
 	
@@ -67,9 +68,11 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 //      setTitle("신서유기_퀴즈");
 		st.b1.addActionListener(this);
 		st.b3.addActionListener(this);
+		
 		wr.b1.addActionListener(this);
 		wr.b2.addActionListener(this);
 		wr.b3.addActionListener(this);
+		
 		en.b1.addActionListener(this);
 		
 		lo.b1.addActionListener(this);
@@ -170,8 +173,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 
 		// 대기방(방들어가기 -> 게임방)
 		else if (e.getSource() == wr.b2) {
-			card.show(getContentPane(), "GameRoom");
-			gr.ta.setText("~~님이 방에 입장하였습니다\n");
+//			card.show(getContentPane(), "GameRoom");
+//			gr.ta.setText("~~님이 방에 입장하였습니다\n");
 		}
 		// 대기방(나가기 -> 시작화면)
 		else if (e.getSource() == wr.b3) {
@@ -284,22 +287,23 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			gr.games.repaint();
 			count=0;
 		}
-		// 게임방-다음문제
+//		 게임방-다음문제
 //		else if(e.getSource() == gr.b1) {
 //			imageNo++;
-//			if(imageNo>9) {
-//				JOptionPane.showMessageDialog(this, "게임 종료!!");
+//			if(imageNo>10) {
 //				System.out.println("게임종료");
 //				System.out.println("정답:"+count);
+//				
 //				return;
 //			}
-//			gr.games.setImage(imageNo, quizNo);
+//			gr.games.setImage(imageNo,quizNo);
 //			gr.games.repaint();
 //		}
 		// 게임방-정답입력창 또는 다음문제 버튼
 		else if(e.getSource() == gr.ans || e.getSource() == gr.b1) {
 			String data=gr.ans.getText();
 			// 정답 O,X 이미지
+			System.out.println("!!! : "+imageNo);
 			if(data.equals(dap[imageNo])) {
 				gr.daps[imageNo+10].setIcon(new ImageIcon(gr.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\o.png"), 65, 40)));
 				count++;
@@ -311,10 +315,15 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			
 			// 다음문제로 넘어가기
 			imageNo++;
+			System.out.println("??? : "+imageNo);
 			if(imageNo>9) {
-				JOptionPane.showMessageDialog(this, "게임 종료!!");
+				
 				System.out.println("게임종료");
 				System.out.println("정답:"+count);
+				try {
+//					out.write((Function.GAME_END+"|"+count+"|"+myRoom+"\n").getBytes());	
+					out.write((Function.GAME_NEXT+"|"+myRoom+"|"+imageNo+"\n").getBytes());
+				}catch(Exception ex) {}
 //				try { 
 //					out.write((Function.GAME_END+"|"+myRoom+"|"+count+"\n").getBytes());
 //					pt.interrupt();
@@ -330,7 +339,11 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		}
 		
 		else if (e.getSource() == en.b1) {
-			card.show(getContentPane(), "GameRoom");
+//			Check = true;
+			try {
+				out.write((Function.GAME_EXIT_U+"|"+myRoom+"\n").getBytes());
+			}catch(Exception ex) {}
+			en.scoreBoard.setText(" ");
 		}
 	}
 
@@ -416,7 +429,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					// 화면이동
 					card.show(getContentPane(), "GameRoom");
 					imageNo = 0;
-
+					
+					
 					// 아바타
 					for (int i = 0; i < 6; i++) {
 						if (gr.sw[i] == false) { // 빈 공백이라면
@@ -538,6 +552,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 							gr.ids[i].setText("");
 						}
 					}
+					
 					break;
 				}
 				case Function.GAME_EXIT: {
@@ -556,6 +571,19 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					gr.ta.setText("");
 					gr.tf.setText("");
 					
+					
+					// 게임 패널 초기화
+					for(int i=10;i<20;i++) {
+//						gr.daps[i]=new JLabel();
+//						gr.ppp.add(gr.daps[i]);
+						gr.daps[i].setIcon(new ImageIcon(gr.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\def.png"), 65, 40)));
+					}
+					gr.games.setImage(100, quizNo);
+					gr.games.repaint();
+					gr.ans.setText("");
+					
+					
+					
 					pt.interrupt();
 					// 초기화 후 대기실 이동
 					card.show(getContentPane(),"Waiting");
@@ -567,6 +595,22 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					gr.games.repaint();
 					pt = new ProgressThread();
 					pt.start();
+					break;
+				}
+				case Function.GAME_END:{
+//					Check = false;
+					out.write((Function.GAME_END+"|"+count+"|"+myRoom+"\n").getBytes());
+					break;
+				}
+				case Function.END_U:{
+					int score = Integer.parseInt(st.nextToken());
+					String id = st.nextToken();
+					en.scoreBoard.append("["+id+"] : "+String.valueOf(score)+"\n");
+					break;
+				}
+				case Function.END:{
+					JOptionPane.showMessageDialog(this, "게임이 종료되었습니다.");
+					card.show(getContentPane(), "End");
 					break;
 				}
 				}
@@ -633,11 +677,12 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			try {
 				for(int i =0; i<=100;i++) {
 					gr.bar.setValue(i);
-					Thread.sleep(100);
+					Thread.sleep(200);
 					if(i>=100) {
-//						out.write((Function.GAME_END+"|"+myRoom+"|"+count+"\n").getBytes());
-						out.write((Function.END+"|"+myRoom+"\n").getBytes());
+						out.write((Function.GAME_END+"|"+count+"|"+myRoom+"\n").getBytes());
 						pt.interrupt();
+//						if(Check) {
+//						}
 					}
 				}
 			}catch(Exception ex) {}

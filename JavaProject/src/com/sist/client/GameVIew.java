@@ -18,8 +18,15 @@ public class GameVIew extends JPanel{
 //    	   back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Quiz\\"+quizNo+"_"+no+".png");
 //    
 //    	}
-    	back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Quiz\\"+quizNo+"_"+no+".png");
+    	if(no==100) { // 초기화 (start화면)
+    		back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Game_Start.png");
+    	}
+    	else {
+    		back=Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Quiz\\"+quizNo+"_"+no+".png");
+    	}
+    	
     }
+    
 	@Override
 	public void paint(Graphics g) {
 		g.drawImage(back,0,0,getWidth(),getHeight(),this);

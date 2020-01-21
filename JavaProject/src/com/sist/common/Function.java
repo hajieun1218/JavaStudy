@@ -116,7 +116,7 @@ public class Function {
    // 게임 종료 -> 시간 타이머 종료, 게임종료 Dialog창 
    public static final int END = 480;
    // 종료창으로 이동
-   
+   public static final int END_U = 490;
    
    /*   CLIENT : TRUE/ FALSE를 받아서 맞으면 SOCRE ++ 틀리면 X
            점수 저팔계|50|거북도사|100| ==> 서버로 전송

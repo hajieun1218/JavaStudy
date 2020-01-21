@@ -42,13 +42,14 @@ public class GameRoom extends JPanel {
 	JProgressBar bar = new JProgressBar();
 
 	// 정답 O X
-	JLabel[] daps=new JLabel[20];
-	
+	JLabel[] daps = new JLabel[20];
+	JPanel ppp = new JPanel();
+
 	// GameRoom()
 	public GameRoom() {
 
 		setLayout(null);
-		
+
 		for (int i = 0; i < 6; i++) {
 			pans[i] = new JPanel();
 			pans[i].setBackground(Color.black);
@@ -99,17 +100,18 @@ public class GameRoom extends JPanel {
 
 		}
 		// 정답 라벨을 올릴 패널
-		JPanel ppp = new JPanel();
-		ppp.setLayout(new GridLayout(2,10,3,3));
-		for(int i =0; i<20;i++) {
+		
+		ppp.setLayout(new GridLayout(2, 10, 3, 3));
+		for (int i = 0; i < 20; i++) {
 			daps[i] = new JLabel();
 			ppp.add(daps[i]);
 		}
 		// 정답 OX 라벨 배치
-		for(int i =0; i<10;i++) {
-			daps[i].setIcon(new ImageIcon(getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\n"+(i+1)+".png"),65,40)));
+		for (int i = 0; i < 10; i++) {
+			daps[i].setIcon(new ImageIcon(
+					getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\n" + (i + 1) + ".png"), 65, 40)));
 		}
-		ppp.setBounds(170,370,670,100);
+		ppp.setBounds(170, 370, 670, 100);
 		ppp.setBackground(Color.white);
 		add(ppp);
 
@@ -170,11 +172,10 @@ public class GameRoom extends JPanel {
 		bar.setForeground(Color.yellow);
 		bar.setBackground(Color.white);
 		bar.setStringPainted(true); // 몇퍼센트 표시
-		bar.setBounds(170,475,670,25);
+		bar.setBounds(170, 475, 670, 25);
 		add(bar);
 //		games.add("South",bar);
-		
-		
+
 	}
 
 	public static Image getImageSizeChange(ImageIcon icon, int width, int height) {

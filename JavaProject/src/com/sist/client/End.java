@@ -2,17 +2,13 @@ package com.sist.client;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 public class End extends JPanel{
 	Image back;
 	JButton b1,b2;
 	JPanel p;
 	
+	JTextArea scoreBoard =new JTextArea();
 	End(){
 		setLayout(null);
 		back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\End.png");
@@ -27,6 +23,10 @@ public class End extends JPanel{
 		p.add(b1);
 		p.add(b2);
 		p.setOpaque(false);
+		
+		add(scoreBoard);
+		scoreBoard.setBackground(Color.white);
+		scoreBoard.setBounds(0,0,300,300);
 		
 	}
 
