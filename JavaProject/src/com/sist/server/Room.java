@@ -6,6 +6,7 @@ public class Room {
 	
 	String roomName,roomState,roomPwd;
 	int current,maxcount;
+	int end;
 
 	// 다른클래스의 이너클래스는 앞에 소속을 써줘야함 Server.Client
 	Vector<Server.Client> userVc=new Vector<Server.Client>();

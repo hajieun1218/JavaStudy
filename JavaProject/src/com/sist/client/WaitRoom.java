@@ -30,7 +30,7 @@ public class WaitRoom extends JPanel implements ActionListener{
       myAvatar.setBounds(615,430,190,150);
       myAvatar.add("Center", new JLabel(
 				new ImageIcon(GameRoom.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
-      
+//      add(myAvatar);
       
       // 방 리스트
       String[] col1 = { "방이름", "게임주제", "인원" };

@@ -51,7 +51,7 @@ public class Server implements Runnable {
 	// 통신을 담당하는 부분(각클라이언트마다 따로 작업을 한다)
 	class Client extends Thread {
 		String id, name, sex, pos;
-		int avata;
+		int avata,score,rank;
 		// pos=> 방위치
 		// 통신
 		Socket s;// 통신장비
@@ -159,7 +159,6 @@ public class Server implements Runnable {
 					case Function.WAIT_INROOM: {
 						// Function.ROOMIN+"|"+rn +"\n"
 						String rn = st.nextToken();
-//						scoreCheck=Boolean.parseBoolean(st.nextToken());
 						/*
 						 * 1. 방 이름을 받는다 2. 방을 찾는다(roomVc) 3. pos, current를 변경 ===================== = 이미
 						 * 방에 있는 사람 처리 => ROOMADD 1. 방에 입장하는 사람의 정보 전송(id,avata,...) 2. 입장 메세지 전송 = 방에
@@ -199,6 +198,7 @@ public class Server implements Runnable {
 //								}
 								if(room.current == room.maxcount) {
 									for(Client user:room.userVc) {
+										user.scoreCheck=false;
 										user.messageTo(Function.START+"|[알림 ☞] 게임을 시작합니다");
 									}
 								}
@@ -283,7 +283,7 @@ public class Server implements Runnable {
 					}
 					case Function.GAME_END:{
 						// 방 번호
-						int score = Integer.parseInt(st.nextToken());
+						score = Integer.parseInt(st.nextToken())*10;
 						String rn = st.nextToken();
 						
 						if(scoreCheck) {
@@ -291,22 +291,54 @@ public class Server implements Runnable {
 						}
 						System.out.println(memberCheck);
 					
-						if(!scoreCheck) {
-							for(Room room : roomVc) {
-								if(room.roomName.equals(rn)) {
-									for(Client user : room.userVc) {
-										if(user.id == id) {
-											messageTo(Function.END+"|");
-											messageTo(Function.END_U+"|"+score+"|"+id);
+//						if(!scoreCheck) {
+//							for(Room room : roomVc) {
+//								if(room.roomName.equals(rn)) {
+//									for(Client user : room.userVc) {
+//										if(user.id == id) {
+//											messageTo(Function.END+"|");
+//											messageTo(Function.END_U+"|"+score+"|"+id);
+//										}
+//										if(!(user.id == id)) {
+//											user.messageTo(Function.END_U+"|"+score+"|"+id);
+//										}
+//										scoreCheck = true;
+//									}
+//								}
+//							}
+//						}
+						
+						for(Room room:roomVc) {
+							if(rn.equals(room.roomName)) {
+								room.end++;
+								if(room.end==room.current) {
+									String temp="";
+									for(int a=0;a<room.userVc.size();a++) {
+										Client user1=room.userVc.get(a);
+										user1.rank=1;
+										for(int b=0;b<room.userVc.size();b++) {
+											Client user2=room.userVc.get(b);
+											if(user1.score<user2.score) {
+												user1.rank++;
+											}
 										}
-										if(!(user.id == id)) {
-											user.messageTo(Function.END_U+"|"+score+"|"+id);
-										}
-										scoreCheck = true;
+									}
+									
+									for(Client user:room.userVc) {
+										temp+=user.id+"/"+user.score+"/"+user.rank+"@";
+									}
+									temp=temp.substring(0,temp.lastIndexOf("@"));
+									System.out.println(temp);
+									for(Client user:room.userVc) {
+										user.messageTo(Function.END_U+"|"+temp);
 									}
 								}
+								
+								break;
 							}
 						}
+						
+						
 						break;
 					}
 //					case Function.GAME_END: {

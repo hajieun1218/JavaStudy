@@ -12,6 +12,8 @@ public class GameRoom extends JPanel {
 
 	boolean[] sw = new boolean[6]; // 들어가면 true, 빈 공백 false
 
+	Font f1 = new Font("굴림", Font.BOLD, 25);
+	
 	// 게임 배경 화면
 
 	Image back = Toolkit.getDefaultToolkit().getImage("C:\\javaDev\\ProjectImage\\Game.png");
@@ -155,14 +157,25 @@ public class GameRoom extends JPanel {
 		b3 = new JButton("게임준비");
 		b4 = new JButton("게임시작");
 		b5 = new JButton("나가기");
+		
+		b1.setEnabled(false);
+		
+//		b1.setContentAreaFilled(false);
+//		b5.setContentAreaFilled(false);
+//	    b1.setFocusPainted(false);
+//	    b5.setFocusPainted(false);
+//	    b1.setFont(f1);
+//	    b5.setFont(f1);
+//	    b1.setForeground(Color.WHITE);
+//	    b5.setForeground(Color.WHITE);
 
 		// 패널과 버튼들
 		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(3, 1, 8, 8));
-		p.add(b4);
+		p.setLayout(new GridLayout(2, 1, 8, 8));
+//		p.add(b4);
 		p.add(b1);
 		p.add(b5);
-		p.setBounds(850, 518, 150, 210);
+		p.setBounds(850, 518, 150, 207);
 		p.setOpaque(false);
 		add(p);
 
