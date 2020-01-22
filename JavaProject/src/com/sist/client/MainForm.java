@@ -137,6 +137,9 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			md2.tf.requestFocus();
 //         md2.setVisible(false);
 		}
+		else if (e.getSource() == md2.b2) {
+			md2.setVisible(false);
+		}
 		// dialog2회원가입 버튼
 		else if (e.getSource() == md2.b1) {
 			md2.setVisible(false);
@@ -211,8 +214,6 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 				 */
 			} catch (Exception ex) {
 			}
-//			wr.tp.setText("");
-//			card.show(getContentPane(), "Start");
 		}
 		// 방만들기버튼 클릭(대기실)
 		else if (e.getSource() == wr.b1) {
@@ -220,9 +221,6 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			mr.tf.setText("");
 			mr.rb1.setSelected(true);
 			mr.box.setSelectedIndex(0);
-//			mr.la4.setVisible(false);
-//			mr.pf.setVisible(false);
-//			mr.pf.setText("");
 			mr.tf.requestFocus();
 
 			mr.setVisible(true);
@@ -306,27 +304,6 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			} catch (Exception ex) {
 			}
 		}
-		// 게임방 - 게임시작
-//		else if (e.getSource() == gr.b4) {
-//			JOptionPane.showMessageDialog(this, "게임을 시작합니다");
-//			gr.ans.setEditable(true);
-//			gr.games.setImage(imageNo, quizNo);
-//			gr.games.repaint();
-//			count = 0;
-//		}
-//		 게임방-다음문제
-//		else if(e.getSource() == gr.b1) {
-//			imageNo++;
-//			if(imageNo>10) {
-//				System.out.println("게임종료");
-//				System.out.println("정답:"+count);
-//				
-//				return;
-//			}
-//			gr.games.setImage(imageNo,quizNo);
-//			gr.games.repaint();
-//		}
-		
 		// 게임방-정답입력창 또는 다음문제 버튼
 		else if (e.getSource() == gr.ans || e.getSource() == gr.b1) {
 			String data = gr.ans.getText();
@@ -382,9 +359,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 //			Check = true;
 			try {
 				out.write((Function.GAME_EXIT_U + "|" + myRoom + "\n").getBytes());
-			} catch (Exception ex) {
-			}
-			en.scoreBoard.setText(" ");
+			} catch (Exception ex) {}
 		}
 	}
 
@@ -673,21 +648,19 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 //					en.scoreBoard.append("[" + id + "] : " + String.valueOf(score) + "\n");
 					
 					
+
 					String temp=st.nextToken();
 					String[] score=temp.split("@");
 					String data="";
-					/*
-					 *  sdfdf 1위\n
-					 *  sdfsdf2위
-					 */
+					
 					for(String s:score) {
 						StringTokenizer ss=new StringTokenizer(s,"/");
 						data+=ss.nextToken()+"("+ss.nextToken()+") ☞ "+ss.nextToken()+"위\n";
 					}
 					data=data.substring(0,data.lastIndexOf("\n"));
-					en.scoreBoard.append(data);
 					card.show(getContentPane(), "End");
-					
+					JOptionPane.showMessageDialog(en, data);
+
 					break;
 				}
 //				case Function.END: {
