@@ -9,7 +9,8 @@ public class WaitRoom extends JPanel implements ActionListener{
 
    // 게임 배경 화면
    Image back;
-   JPanel myAvatar=new JPanel();
+//   JPanel myInfo=new JPanel();
+//   JLabel myAvatar=new JLabel();
    
    JTable table1, table2;
    DefaultTableModel model1, model2;
@@ -27,10 +28,11 @@ public class WaitRoom extends JPanel implements ActionListener{
       setLayout(null);
       
       // 아바타 이미지
-      myAvatar.setBounds(615,430,190,150);
-      myAvatar.add("Center", new JLabel(
-				new ImageIcon(GameRoom.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 150, 120))));
-//      add(myAvatar);
+//      myInfo.setBounds(615,420,385,190);
+//      myInfo.setBackground(new Color(255,0,0,0)); // 패널 배경 투명하게
+//      myAvatar.add(new JLabel(
+//				new ImageIcon(GameRoom.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\default.png"), 190,150))));
+//      add(myInfo);
       
       // 방 리스트
       String[] col1 = { "방이름", "게임주제", "인원" };
@@ -108,7 +110,7 @@ public class WaitRoom extends JPanel implements ActionListener{
       p.add(b1);
       p.add(b2);
       p.add(b3);
-      p.setBounds(615, 620, 380, 100);
+      p.setBounds(615, 620, 385, 100);
       
       
       add(tf);
@@ -169,6 +171,10 @@ public class WaitRoom extends JPanel implements ActionListener{
 //         md.setVisible(false);
 //      }
    }
+   public void setImage(int image) {
+	   
+   }
+   
 
    @Override
    protected void paintComponent(Graphics g) {

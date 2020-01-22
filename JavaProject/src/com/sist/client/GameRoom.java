@@ -153,7 +153,7 @@ public class GameRoom extends JPanel {
 		add(ans);
 
 		// 버튼 입력
-		b1 = new JButton("다음문제");
+		b1 = new JButton("게임시작");
 		b3 = new JButton("게임준비");
 		b4 = new JButton("게임시작");
 		b5 = new JButton("나가기");

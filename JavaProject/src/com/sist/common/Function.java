@@ -79,6 +79,8 @@ public class Function {
    
    public static final int WAIT_POSCHANGE = 340;
    
+//   public static final int WAIT_MYINFO = 350;
+   
    
    
    

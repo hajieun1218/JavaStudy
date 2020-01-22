@@ -171,6 +171,10 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 				lo.pf.requestFocus();
 			} else {
 				connection(result);
+				
+				try {
+				} catch(Exception ex) {}
+				
 			}
 		}
 
@@ -326,8 +330,17 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 		// 게임방-정답입력창 또는 다음문제 버튼
 		else if (e.getSource() == gr.ans || e.getSource() == gr.b1) {
 			String data = gr.ans.getText();
+			
+			if(gr.b1.getText().equals("게임시작")) {
+				gr.b1.setText("다음문제");
+				gr.games.setImage(0, quizNo);
+				gr.games.repaint();
+				gr.ans.requestFocus();
+				return;
+			}
+			
+			
 			// 정답 O,X 이미지
-			System.out.println("!!! : " + imageNo);
 			if (data.equals(dap[imageNo])) {
 				gr.daps[imageNo + 10].setIcon(new ImageIcon(
 						gr.getImageSizeChange(new ImageIcon("C:\\javaDev\\ProjectImage\\o.png"), 65, 40)));
@@ -339,9 +352,9 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 
 			// 다음문제로 넘어가기
 			imageNo++;
-			System.out.println("??? : " + imageNo);
+			
 			if (imageNo > 9) {
-
+				JOptionPane.showMessageDialog(this, "게임 종료!!\n모든 인원이 다 풀 때까지 기다려주세요");
 				System.out.println("게임종료");
 				System.out.println("정답:" + count);
 				try {
@@ -361,6 +374,8 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 
 			gr.ans.setText("");
 			gr.ans.requestFocus();
+			
+			
 		}
 
 		else if (e.getSource() == en.b1) {
@@ -564,6 +579,16 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					}
 					break;
 				}
+//				case Function.WAIT_MYINFO: {
+//					// Function.WAIT_MYINFO+"|"+id+"|"+name+"|"+sex+"|"+avata
+//					String id=st.nextToken();
+//					String name=st.nextToken();
+//					String sex=st.nextToken();
+//					String avata=st.nextToken();
+//					
+//					
+//					break;
+//				}
 				case Function.GAME_EXIT_U: {
 					// 게임방에 남아있는 사람 => 아바타, 아이디 빼기
 					String id = st.nextToken();
@@ -613,6 +638,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					gr.ans.setText("");
 					gr.b1.setEnabled(false);
 					gr.bar.setValue(0);
+					gr.b1.setText("게임시작");
 
 					pt.interrupt();
 					// 초기화 후 대기실 이동
@@ -620,9 +646,12 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					break;
 				}
 				case Function.START: {
+					
 					gr.ta.append(st.nextToken() + "\n");// ??
-					JOptionPane.showMessageDialog(this, "게임을 시작합니다");
-					gr.games.setImage(0, quizNo);
+//					JOptionPane.showMessageDialog(this, "게임을 시작합니다");
+//					gr.games.setImage(0, quizNo);
+//					gr.games.repaint();
+					gr.games.setImage(50, quizNo);
 					gr.games.repaint();
 					gr.ans.setEditable(true);
 					gr.ans.requestFocus();
@@ -647,7 +676,10 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					String temp=st.nextToken();
 					String[] score=temp.split("@");
 					String data="";
-					
+					/*
+					 *  sdfdf 1위\n
+					 *  sdfsdf2위
+					 */
 					for(String s:score) {
 						StringTokenizer ss=new StringTokenizer(s,"/");
 						data+=ss.nextToken()+"("+ss.nextToken()+") ☞ "+ss.nextToken()+"위\n";
@@ -658,11 +690,11 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 					
 					break;
 				}
-				case Function.END: {
-					JOptionPane.showMessageDialog(this, "게임이 종료되었습니다.");
-					card.show(getContentPane(), "End");
-					break;
-				}
+//				case Function.END: {
+//					JOptionPane.showMessageDialog(this, "게임이 종료되었습니다.");
+//					card.show(getContentPane(), "End");
+//					break;
+//				}
 				}
 			}
 		} catch (Exception ex) {

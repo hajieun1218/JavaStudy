@@ -198,7 +198,7 @@ public class Server implements Runnable {
 //								}
 								if(room.current == room.maxcount) {
 									for(Client user:room.userVc) {
-										user.scoreCheck=false;
+//										user.scoreCheck=false;
 										user.messageTo(Function.START+"|[알림 ☞] 게임을 시작합니다");
 									}
 								}
@@ -355,6 +355,13 @@ public class Server implements Runnable {
 //							}
 //						}
 //						
+//						break;
+//					}
+//					case Function.WAIT_MYINFO: {
+//						String mid=st.nextToken();
+//						if(mid.equals(id)) {
+//							messageTo(Function.WAIT_MYINFO+"|"+id+"|"+name+"|"+sex+"|"+avata);
+//						}
 //						break;
 //					}
 					}
