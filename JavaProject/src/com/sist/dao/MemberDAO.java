@@ -7,7 +7,7 @@ public class MemberDAO {
 	private PreparedStatement ps; 
 	// 오라클 연결주소
 //	private final String URL="jdbc:oracle:thin:@211.238.142.184:1521:XE"; 
-	private final String URL="jdbc:oracle:thin:@localhost:1521:XE"; 
+	private final String URL="jdbc:oracle:thin:@211.238.142.211:1521:XE"; 
 	
 	// 1. 드라이버 등록 => 한번 수행 => 생성자
 	public MemberDAO() {
@@ -43,7 +43,7 @@ public class MemberDAO {
 			// 연결
 			getConnection();
 			// 오라클에 요청
-			String sql="SELECT COUNT(*) FROM member WHERE id=?"; // 0=>id틀림, 1=>id존재
+			String sql="SELECT COUNT(*) FROM member1 WHERE id=?"; // 0=>id틀림, 1=>id존재
 			// 오라클로 전송
 			ps=conn.prepareStatement(sql); 
 			// ?에 값을 채운다
@@ -59,7 +59,7 @@ public class MemberDAO {
 			}
 			else {
 				// 요청
-				sql="SELECT * FROM member WHERE id=?";
+				sql="SELECT * FROM member1 WHERE id=?";
 				ps=conn.prepareStatement(sql); // 전송
 				ps.setString(1, id); // 실행전에 ?에 값을 채운다
 				rs=ps.executeQuery();

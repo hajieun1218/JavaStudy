@@ -365,7 +365,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 
 	public void connection(String userData) {
 		try {
-			s = new Socket("localhost", 8888);
+			s = new Socket("211.238.142.211", 8888);
 			out = s.getOutputStream();
 			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			out.write((Function.LOGIN + "|" + userData + "\n").getBytes());
@@ -732,7 +732,7 @@ public class MainForm extends JFrame implements ActionListener, Runnable, MouseL
 			try {
 				for (int i = 0; i <= 100; i++) {
 					gr.bar.setValue(i);
-					Thread.sleep(200);
+					Thread.sleep(300);
 					if (i >= 100) {
 						out.write((Function.GAME_END + "|" + count + "|" + myRoom + "\n").getBytes());
 						pt.interrupt();
